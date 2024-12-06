@@ -63,6 +63,12 @@ public class Game {
             // Step 2: Resolve the cards
             resolveCards(chosenCards);
 
+            // Display score piles for each player
+            for (Player player : players) {
+                System.out.println(player.getName() + "'s score pile:");
+                player.printScorePile();
+            }
+
             // Step 3: Add new corn and deal new cards
             addCornToFarms();
             dealNewCards();
@@ -161,7 +167,9 @@ public class Game {
         if (birds.size() == 1) {
             Map.Entry<Player, Card> bird = birds.get(0);
             Player player = bird.getKey();
-            player.addToScore(farm.getCornCubes());
+            for (CornCube corn : farm.getCornCubes()) {
+                player.addToScore(corn);
+            }
             farm.clearCorn();
             System.out.println(player.getName() + "'s bird eats all the corn!");
         } else {
@@ -175,7 +183,9 @@ public class Game {
                     winner = bird;
                 }
             }
-            winner.getKey().addToScore(farm.getCornCubes());
+            for (CornCube corn : farm.getCornCubes()) {
+                winner.getKey().addToScore(corn);
+            }
             farm.clearCorn();
             System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!");
         }
@@ -200,13 +210,37 @@ public class Game {
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
     }
 
+    // private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
+    //     for (Map.Entry<Player, Card> fleeingBird : fleeingBirds) {
+    //         if (farmingCornContainsGreen(farm)) {
+    //             fleeingBird.getKey().addToScore(new CornCube(CornCube.CornType.GREEN));
+    //             System.out.println(fleeingBird.getKey().getName() + "'s bird flees with a green corn.");
+    //         } else {
+    //             System.out.println(fleeingBird.getKey().getName() + "'s bird flees without any corn.");
+    //         }
+    //     }
+    // }
+
     private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
-        for (Map.Entry<Player, Card> fleeingBird : fleeingBirds) {
-            if (farmingCornContainsGreen(farm)) {
-                fleeingBird.getKey().addToScore(new CornCube(CornCube.CornType.GREEN));
-                System.out.println(fleeingBird.getKey().getName() + "'s bird flees with a green corn.");
-            } else {
-                System.out.println(fleeingBird.getKey().getName() + "'s bird flees without any corn.");
+        if (fleeingBirds.size() == 1) {
+            // If a fleeing bird is alone on a pile, it eats everything like a normal bird
+            Map.Entry<Player, Card> fleeingBird = fleeingBirds.get(0);
+            Player player = fleeingBird.getKey();
+            for (CornCube corn : farm.getCornCubes()) {
+                player.addToScore(corn);
+            }
+            farm.clearCorn();
+            System.out.println(player.getName() + "'s fleeing bird eats all the corn!");
+        } else {
+            // If it is not alone and there is a green corn, it takes a green corn
+            for (Map.Entry<Player, Card> fleeingBird : fleeingBirds) {
+                if (farmingCornContainsGreen(farm)) {
+                    fleeingBird.getKey().addToScore(new CornCube(CornCube.CornType.GREEN));
+                    System.out.println(fleeingBird.getKey().getName() + "'s bird flees with a green corn.");
+                } else {
+                    // If it is not alone and there is no green corn, it gets nothing
+                    System.out.println(fleeingBird.getKey().getName() + "'s bird flees without any corn.");
+                }
             }
         }
     }

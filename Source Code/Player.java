@@ -54,6 +54,20 @@ public class Player {
         return total;
     }
 
+    public void printScorePile() {
+        for (Object obj : scorePile) {
+            if (obj instanceof Card) {
+                Card card = (Card) obj;
+                System.out.println("Card: " + card);
+            } else if (obj instanceof CornCube) {
+                CornCube cornCube = (CornCube) obj;
+                System.out.println("CornCube: " + cornCube);
+            } else {
+                System.out.println("Unknown object: " + obj.getClass().getName());
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return name + " (Score: " + calculateScore() + ")";
