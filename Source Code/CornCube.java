@@ -15,6 +15,10 @@ public class CornCube {
         return 0;
     }
 
+    public CornType getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return type.name();

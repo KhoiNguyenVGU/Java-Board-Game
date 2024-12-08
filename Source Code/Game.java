@@ -222,16 +222,38 @@ public class Game {
     // }
 
     private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
+        // if (fleeingBirds.size() == 1) {
+        //     // If a fleeing bird is alone on a pile, it takes only the green corn
+        //     Map.Entry<Player, Card> fleeingBird = fleeingBirds.get(0);
+        //     Player player = fleeingBird.getKey();
+        //     boolean greenCornFound = false;
+        //     Iterator<CornCube> iterator = farm.getCornCubes().iterator();
+        //     while (iterator.hasNext()) {
+        //         CornCube corn = iterator.next();
+        //         if (corn.getType() == CornCube.CornType.GREEN) {
+        //             player.addToScore(corn);
+        //             iterator.remove();
+        //             greenCornFound = true;
+        //             break;
+        //         }
+        //     }
+        //     if (greenCornFound) {
+        //         System.out.println(player.getName() + "'s fleeing bird eats a green corn!");
+        //     } else {
+        //         System.out.println(player.getName() + "'s fleeing bird flees without any corn.");
+        //     }
+        // } 
         if (fleeingBirds.size() == 1) {
-            // If a fleeing bird is alone on a pile, it eats everything like a normal bird
-            Map.Entry<Player, Card> fleeingBird = fleeingBirds.get(0);
-            Player player = fleeingBird.getKey();
+            Map.Entry<Player, Card> bird = fleeingBirds.get(0);
+            Player player = bird.getKey();
             for (CornCube corn : farm.getCornCubes()) {
                 player.addToScore(corn);
             }
             farm.clearCorn();
-            System.out.println(player.getName() + "'s fleeing bird eats all the corn!");
-        } else {
+            System.out.println(player.getName() + "'s bird eats all the corn!");
+        }
+
+        else {
             // If it is not alone and there is a green corn, it takes a green corn
             for (Map.Entry<Player, Card> fleeingBird : fleeingBirds) {
                 if (farmingCornContainsGreen(farm)) {
