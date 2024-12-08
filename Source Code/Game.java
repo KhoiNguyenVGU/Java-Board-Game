@@ -212,12 +212,7 @@ public class Game {
         allBirds.addAll(fleeingBirds);
     
         for (Map.Entry<Player, Card> bird : allBirds) {
-            int birdValue = bird.getValue().getValue();
-            if (birdValue > 0) {
-                winningFox.getKey().addToScore(bird.getValue());
-            } else {
-                winningFox.getKey().addToScore(-2);
-            }
+            winningFox.getKey().addToScore(bird.getValue());
         }
         // farm.clearCorn();
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
