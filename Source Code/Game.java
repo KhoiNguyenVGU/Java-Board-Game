@@ -74,6 +74,7 @@ public class Game {
             // Step 1: Players play all their cards
             for (int i = 0; i < 5; i++) {
                 Map<Player, Card> chosenCards = new HashMap<>();
+                System.out.println("\n--- New Turn ---");
                 for (Player player : players) {
                     Card card = pickCardForPlayer(player, scanner);
                     chosenCards.put(player, card);
