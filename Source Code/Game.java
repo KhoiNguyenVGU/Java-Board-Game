@@ -154,20 +154,18 @@ public class Game {
         // Combine birds and foxes into otherBirdsAndFoxes
         otherBirdsAndFoxes.addAll(birds);
         otherBirdsAndFoxes.addAll(foxes);
-        
+    
         // Resolve fleeing birds
         if (!fleeingBirds.isEmpty()) {
             resolveFleeingBird(fleeingBirds, farm, otherBirdsAndFoxes);
         }
     
         // Resolve foxes and birds
-        if (!foxes.isEmpty() && !birds.isEmpty()) {
-            resolveFoxesAndBirds(foxes, birds, farm);
+        if (!foxes.isEmpty() && (!birds.isEmpty() || !fleeingBirds.isEmpty())) {
+            resolveFoxesAndBirds(foxes, birds, fleeingBirds, farm);
         } else if (!birds.isEmpty()) {
             resolveBirds(birds, farm);
         }
-    
-        
     }
 
     private void resolveBirds(List<Map.Entry<Player, Card>> birds, Farm farm) {
@@ -198,7 +196,7 @@ public class Game {
         }
     }
 
-    private void resolveFoxesAndBirds(List<Map.Entry<Player, Card>> foxes, List<Map.Entry<Player, Card>> birds, Farm farm) {
+    private void resolveFoxesAndBirds(List<Map.Entry<Player, Card>> foxes, List<Map.Entry<Player, Card>> birds, List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
         Map.Entry<Player, Card> winningFox = foxes.get(0);
         int maxRoll = -1;
     
@@ -210,8 +208,16 @@ public class Game {
             }
         }
     
-        for (Map.Entry<Player, Card> bird : birds) {
-            winningFox.getKey().addToScore(bird.getValue());
+        List<Map.Entry<Player, Card>> allBirds = new ArrayList<>(birds);
+        allBirds.addAll(fleeingBirds);
+    
+        for (Map.Entry<Player, Card> bird : allBirds) {
+            int birdValue = bird.getValue().getValue();
+            if (birdValue > 0) {
+                winningFox.getKey().addToScore(bird.getValue());
+            } else {
+                winningFox.getKey().addToScore(-2);
+            }
         }
         // farm.clearCorn();
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
@@ -262,11 +268,6 @@ public class Game {
                 System.out.println(player.getName() + "'s bird flees without any green corn.");
             }
         }
-    }
-    
-    
-    private boolean farmingCornContainsGreen(Farm farm) {
-        return farm.getCornCubes().stream().anyMatch(c -> c.getPoints() == 1);
     }
 
     private void addCornToFarms() {

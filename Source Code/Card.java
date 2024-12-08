@@ -14,6 +14,10 @@ public class Card {
     public int getValue() { return value; }
     public String getColor() { return color; }
 
+    public boolean isFleeingBird() {
+        return type == Type.FLEEING_BIRD;
+    }
+
     @Override
     public String toString() {
         return type + " (" + value + ", " + color + ")";
