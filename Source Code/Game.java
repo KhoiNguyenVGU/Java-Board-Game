@@ -169,6 +169,9 @@ public class Game {
     }
 
     private void resolveBirds(List<Map.Entry<Player, Card>> birds, Farm farm) {
+        // Sort birds list to ensure Player 1 rolls first
+        birds.sort(Comparator.comparing(entry -> entry.getKey().getName()));
+    
         if (birds.size() == 1) {
             Map.Entry<Player, Card> bird = birds.get(0);
             Player player = bird.getKey();
@@ -182,7 +185,10 @@ public class Game {
             Map.Entry<Player, Card> winner = birds.get(0);
             int maxRoll = -1;
             for (Map.Entry<Player, Card> bird : birds) {
-                int roll = die.roll() + bird.getValue().getValue();
+                int diceRoll = die.roll();
+                int roll = diceRoll + bird.getValue().getValue();
+                System.out.println(bird.getKey().getName() + " rolled a dice value of " + diceRoll);
+                System.out.println(bird.getKey().getName() + " has a total value of " + roll);
                 if (roll > maxRoll) {
                     maxRoll = roll;
                     winner = bird;
@@ -195,13 +201,19 @@ public class Game {
             System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!");
         }
     }
-
+    
     private void resolveFoxesAndBirds(List<Map.Entry<Player, Card>> foxes, List<Map.Entry<Player, Card>> birds, List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
+        // Sort foxes list to ensure Player 1 rolls first
+        foxes.sort(Comparator.comparing(entry -> entry.getKey().getName()));
+    
         Map.Entry<Player, Card> winningFox = foxes.get(0);
         int maxRoll = -1;
     
         for (Map.Entry<Player, Card> fox : foxes) {
-            int roll = die.roll() + fox.getValue().getValue();
+            int diceRoll = die.roll();
+            int roll = diceRoll + fox.getValue().getValue();
+            System.out.println(fox.getKey().getName() + " rolled a dice value of " + diceRoll);
+            System.out.println(fox.getKey().getName() + " has a total value of " + roll);
             if (roll > maxRoll) {
                 maxRoll = roll;
                 winningFox = fox;
