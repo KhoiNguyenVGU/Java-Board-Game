@@ -206,7 +206,7 @@ public class Game {
         for (Map.Entry<Player, Card> bird : birds) {
             winningFox.getKey().addToScore(bird.getValue());
         }
-        farm.clearCorn();
+        // farm.clearCorn();
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
     }
 
