@@ -4,6 +4,7 @@ public class Game {
     private List<Farm> farms = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private List<Card> deck = new ArrayList<>();
+    private List<Card> discardPile = new ArrayList<>();
     private Die die = new Die();
 
     public Game(int playerCount) {
@@ -46,6 +47,23 @@ public class Game {
         }
     }
 
+    private void reshuffleDiscardPileIntoDeck() {
+        deck.addAll(discardPile);
+        Collections.shuffle(deck);
+        discardPile.clear();
+    }
+
+    private void dealNewCardsToPlayers() {
+        for (Player player : players) {
+            for (int i = 0; i < 5; i++) {
+                if (deck.isEmpty()) {
+                    reshuffleDiscardPileIntoDeck();
+                }
+                player.addCard(deck.remove(0));
+            }
+        }
+    }
+
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
@@ -53,31 +71,38 @@ public class Game {
             System.out.println("\n--- New Round ---");
             printGameState();
 
-            // Step 1: Players pick cards
-            Map<Player, Card> chosenCards = new HashMap<>();
-            for (Player player : players) {
-                Card card = pickCardForPlayer(player, scanner);
-                chosenCards.put(player, card);
-            }
+            // Step 1: Players play all their cards
+            for (int i = 0; i < 5; i++) {
+                Map<Player, Card> chosenCards = new HashMap<>();
+                for (Player player : players) {
+                    Card card = pickCardForPlayer(player, scanner);
+                    chosenCards.put(player, card);
+                }
 
-            // Step 2: Resolve the cards
-            resolveCards(chosenCards);
+                // Step 2: Resolve the cards
+                resolveCards(chosenCards);
 
-            // Display score piles for each player
-            for (Player player : players) {
-                System.out.println(player.getName() + "'s score pile:");
-                player.printScorePile();
+                // Display score piles for each player
+                for (Player player : players) {
+                    System.out.println(player.getName() + "'s score pile:");
+                    player.printScorePile();
+                }
+
+                // Check if all corns are used up
+                if (!canAddCornToFarms()) {
+                    System.out.println("\n--- Game Over ---");
+                    declareWinner();
+                    return;
+                }
             }
 
             // Step 3: Add new corn and deal new cards
             addCornToFarms();
-            dealNewCards();
+            dealNewCardsToPlayers();
 
-            // Check if the game should end
-            if (deck.isEmpty() || !canAddCornToFarms()) {
-                System.out.println("\n--- Game Over ---");
-                declareWinner();
-                break;
+            // Check if the deck is empty and reshuffle if necessary
+            if (deck.isEmpty()) {
+                reshuffleDiscardPileIntoDeck();
             }
         }
     }
@@ -286,13 +311,13 @@ public class Game {
         }
     }
 
-    private void dealNewCards() {
-        for (Player player : players) {
-            if (!deck.isEmpty()) {
-                player.addCard(deck.remove(0));
-            }
-        }
-    }
+    // private void dealNewCards() {
+    //     for (Player player : players) {
+    //         if (!deck.isEmpty()) {
+    //             player.addCard(deck.remove(0));
+    //         }
+    //     }
+    // }
 
     private boolean canAddCornToFarms() {
         return deck.size() >= farms.size();
