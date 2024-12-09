@@ -4,6 +4,7 @@ public class Game {
     private List<Farm> farms = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private List<Card> deck = new ArrayList<>();
+    private List<Card> discardPile = new ArrayList<>();
     private Die die = new Die();
 
     int greenCornCount = 26;
@@ -107,6 +108,10 @@ public class Game {
 
             // Display the number of cards left in the deck
             System.out.println("\nDeck Count: " + deck.size());
+            System.out.println("Discard Pile: " + discardPile.size());
+            for (Card card : discardPile) {
+                System.out.println(card);
+            }
 
             // Step 3: Check if the game should end
             if (greenCornCount + blueCornCount + yellowCornCount >= 6)
@@ -219,6 +224,8 @@ public class Game {
             resolveFoxesAndBirds(foxes, birds, fleeingBirds, farm);
         } else if (!birds.isEmpty()) {
             resolveBirds(birds, farm);
+        } else if (!foxes.isEmpty()) {
+            resolveFoxes(foxes);
         }
     }
 
@@ -254,6 +261,11 @@ public class Game {
             farm.clearCorn();
             System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!");
         }
+    
+        // Add played bird cards to discard pile
+        for (Map.Entry<Player, Card> bird : birds) {
+            discardPile.add(bird.getValue());
+        }
     }
     
     private void resolveFoxesAndBirds(List<Map.Entry<Player, Card>> foxes, List<Map.Entry<Player, Card>> birds, List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
@@ -277,24 +289,35 @@ public class Game {
         List<Map.Entry<Player, Card>> allBirds = new ArrayList<>(birds);
         allBirds.addAll(fleeingBirds);
     
+        // List to keep track of eaten birds
+        List<Map.Entry<Player, Card>> eatenBirds = new ArrayList<>();
+    
         for (Map.Entry<Player, Card> bird : allBirds) {
             winningFox.getKey().addToScore(bird.getValue());
+            eatenBirds.add(bird); // Add bird to eaten birds list
         }
         // farm.clearCorn();
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
+    
+        // Add played fox cards to discard pile
+        for (Map.Entry<Player, Card> fox : foxes) {
+            discardPile.add(fox.getValue());
+        }
+        // Add played bird cards to discard pile (excluding eaten birds)
+        for (Map.Entry<Player, Card> bird : allBirds) {
+            if (!eatenBirds.contains(bird)) {
+                discardPile.add(bird.getValue());
+            }
+        }
     }
 
-    // private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
-    //     for (Map.Entry<Player, Card> fleeingBird : fleeingBirds) {
-    //         if (farmingCornContainsGreen(farm)) {
-    //             fleeingBird.getKey().addToScore(new CornCube(CornCube.CornType.GREEN));
-    //             System.out.println(fleeingBird.getKey().getName() + "'s bird flees with a green corn.");
-    //         } else {
-    //             System.out.println(fleeingBird.getKey().getName() + "'s bird flees without any corn.");
-    //         }
-    //     }
-    // }
-
+    private void resolveFoxes(List<Map.Entry<Player, Card>> foxes) {
+    // Add played fox cards to discard pile
+    for (Map.Entry<Player, Card> fox : foxes) {
+        discardPile.add(fox.getValue());
+    }
+}
+    
     private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm, List<Map.Entry<Player, Card>> otherBirdsAndFoxes) {
         if (fleeingBirds.isEmpty()) {
             return;
@@ -328,6 +351,11 @@ public class Game {
             } else {
                 System.out.println(player.getName() + "'s bird flees without any green corn.");
             }
+        }
+    
+        // Add played fleeing bird cards to discard pile
+        for (Map.Entry<Player, Card> fleeingBirdEntry : fleeingBirds) {
+            discardPile.add(fleeingBirdEntry.getValue());
         }
     }
 
