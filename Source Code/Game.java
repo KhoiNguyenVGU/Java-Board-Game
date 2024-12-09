@@ -9,6 +9,7 @@ public class Game {
     int greenCornCount = 26;
     int blueCornCount = 26;
     int yellowCornCount = 26;
+    // int deckCount = 60 - 5 * players.size();
 
     public Game(int playerCount) {
         initializeFarms();
@@ -26,8 +27,20 @@ public class Game {
     private void initializeDeck() {
         String[] colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange"};
         for (String color : colors) {
-            for (int i = 3; i <= 6; i++) deck.add(new Card(Card.Type.BIRD, i, color));
-            for (int i = 4; i <= 6; i++) deck.add(new Card(Card.Type.FOX, i, color));
+            // Add 2 birds of type 3 and 4
+            for (int i = 0; i < 2; i++) {
+                deck.add(new Card(Card.Type.BIRD, 3, color));
+                deck.add(new Card(Card.Type.BIRD, 4, color));
+            }
+            // Add birds of type 5 and 6
+            for (int i = 5; i <= 6; i++) {
+                deck.add(new Card(Card.Type.BIRD, i, color));
+            }
+            // Add foxes of type 4 to 6
+            for (int i = 4; i <= 6; i++) {
+                deck.add(new Card(Card.Type.FOX, i, color));
+            }
+            // Add fleeing bird
             deck.add(new Card(Card.Type.FLEEING_BIRD, -2, color));
         }
         Collections.shuffle(deck);
@@ -92,6 +105,9 @@ public class Game {
             System.out.println("Blue Corn Count: " + blueCornCount);
             System.out.println("Yellow Corn Count: " + yellowCornCount);
 
+            // Display the number of cards left in the deck
+            System.out.println("\nDeck Count: " + deck.size());
+
             // Step 3: Check if the game should end
             if (greenCornCount + blueCornCount + yellowCornCount >= 6)
             {
@@ -108,6 +124,7 @@ public class Game {
             // Step 4: Deal new cards to players
             if (players.get(0).getHand().isEmpty()) {
                 dealNewCards();
+                // deckCount = 5 * players.size();
             }
 
             // Check if the game should end
