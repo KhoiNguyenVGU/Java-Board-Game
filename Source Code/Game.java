@@ -6,6 +6,10 @@ public class Game {
     private List<Card> deck = new ArrayList<>();
     private Die die = new Die();
 
+    int greenCornCount = 26;
+    int blueCornCount = 26;
+    int yellowCornCount = 26;
+
     public Game(int playerCount) {
         initializeFarms();
         initializeDeck();
@@ -41,8 +45,21 @@ public class Game {
         Random random = new Random();
         CornCube.CornType[] cornTypes = CornCube.CornType.values();
         for (Farm farm : farms) {
-            CornCube cube = new CornCube(cornTypes[random.nextInt(cornTypes.length)]);
+            CornCube.CornType chosenType = cornTypes[random.nextInt(cornTypes.length)];
+            CornCube cube = new CornCube(chosenType);
             farm.addCorn(cube);
+            
+            switch (chosenType) {
+                case GREEN:
+                    greenCornCount--;
+                    break;
+                case BLUE:
+                    blueCornCount--;
+                    break;
+                case YELLOW:
+                    yellowCornCount--;
+                    break;
+            }
         }
     }
 
@@ -69,11 +86,18 @@ public class Game {
                 player.printScorePile();
             }
 
+            // Display the number of corn of each type
+            System.out.println("\n--- Corn Count ---");
+            System.out.println("Green Corn Count: " + greenCornCount);
+            System.out.println("Blue Corn Count: " + blueCornCount);
+            System.out.println("Yellow Corn Count: " + yellowCornCount);
+
             // Step 3: Add new corn and deal new cards
             addCornToFarms();
             if (players.get(0).getHand().isEmpty()) {
                 dealNewCards();
             }
+
 
             // Check if the game should end
             if (deck.isEmpty() || !canAddCornToFarms()) {
@@ -283,8 +307,21 @@ public class Game {
         Random random = new Random();
         CornCube.CornType[] cornTypes = CornCube.CornType.values();
         for (Farm farm : farms) {
-            CornCube cube = new CornCube(cornTypes[random.nextInt(cornTypes.length)]);
+            CornCube.CornType chosenType = cornTypes[random.nextInt(cornTypes.length)];
+            CornCube cube = new CornCube(chosenType);
             farm.addCorn(cube);
+            
+            switch (chosenType) {
+                case GREEN:
+                    greenCornCount--;
+                    break;
+                case BLUE:
+                    blueCornCount--;
+                    break;
+                case YELLOW:
+                    yellowCornCount--;
+                    break;
+            }
         }
     }
 
