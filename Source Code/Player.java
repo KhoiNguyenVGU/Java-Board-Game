@@ -69,6 +69,7 @@ public class Player {
                 System.out.println("Unknown object: " + obj.getClass().getName());
             }
         }
+        System.out.println("\n");
     }
 
     @Override

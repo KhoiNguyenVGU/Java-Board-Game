@@ -92,19 +92,30 @@ public class Game {
             System.out.println("Blue Corn Count: " + blueCornCount);
             System.out.println("Yellow Corn Count: " + yellowCornCount);
 
-            // Step 3: Add new corn and deal new cards
-            addCornToFarms();
-            if (players.get(0).getHand().isEmpty()) {
-                dealNewCards();
+            // Step 3: Check if the game should end
+            if (greenCornCount + blueCornCount + yellowCornCount >= 6)
+            {
+                addCornToFarms();
             }
 
-
-            // Check if the game should end
-            if (deck.isEmpty() || !canAddCornToFarms()) {
+            else
+            {
                 System.out.println("\n--- Game Over ---");
                 declareWinner();
                 break;
             }
+
+            // Step 4: Deal new cards to players
+            if (players.get(0).getHand().isEmpty()) {
+                dealNewCards();
+            }
+
+            // Check if the game should end
+            // if (greenCornCount + blueCornCount + yellowCornCount == 0) {
+            //     System.out.println("\n--- Game Over ---");
+            //     declareWinner();
+            //     break;
+            // }
         }
     }
 
@@ -157,7 +168,7 @@ public class Game {
         // Display player scores after resolving all actions
         System.out.println("\n--- Player Scores After This Turn ---");
         for (Player player : players) {
-            System.out.println(player.getName() + " (Score: " + player.calculateScore() + ")");
+            System.out.println(player.getName() + " (Score: " + player.calculateScore() + ")\n");
         }
         System.out.println();
     }
@@ -305,12 +316,28 @@ public class Game {
 
     private void addCornToFarms() {
         Random random = new Random();
-        CornCube.CornType[] cornTypes = CornCube.CornType.values();
+        List<CornCube.CornType> availableCornTypes = new ArrayList<>();
+    
         for (Farm farm : farms) {
-            CornCube.CornType chosenType = cornTypes[random.nextInt(cornTypes.length)];
+            availableCornTypes.clear();
+            if (greenCornCount > 0) {
+                availableCornTypes.add(CornCube.CornType.GREEN);
+            }
+            if (blueCornCount > 0) {
+                availableCornTypes.add(CornCube.CornType.BLUE);
+            }
+            if (yellowCornCount > 0) {
+                availableCornTypes.add(CornCube.CornType.YELLOW);
+            }
+    
+            if (availableCornTypes.isEmpty()) {
+                break; // No corn left to add
+            }
+    
+            CornCube.CornType chosenType = availableCornTypes.get(random.nextInt(availableCornTypes.size()));
             CornCube cube = new CornCube(chosenType);
             farm.addCorn(cube);
-            
+    
             switch (chosenType) {
                 case GREEN:
                     greenCornCount--;
@@ -333,10 +360,6 @@ public class Game {
                 }
             }
         }
-    }
-
-    private boolean canAddCornToFarms() {
-        return deck.size() >= farms.size();
     }
 
     private void declareWinner() {
