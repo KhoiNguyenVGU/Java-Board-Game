@@ -215,12 +215,13 @@ public class Game {
         otherBirdsAndFoxes.addAll(foxes);
     
         // Resolve fleeing birds
-        if (!fleeingBirds.isEmpty()) {
-            resolveFleeingBird(fleeingBirds, farm, otherBirdsAndFoxes);
+        if (!fleeingBirds.isEmpty() && foxes.isEmpty()) {
+            resolveFleeingBirdDiscard(fleeingBirds, farm, otherBirdsAndFoxes);
         }
     
         // Resolve foxes and birds
         if (!foxes.isEmpty() && (!birds.isEmpty() || !fleeingBirds.isEmpty())) {
+            resolveFleeingBird(fleeingBirds, farm, otherBirdsAndFoxes);
             resolveFoxesAndBirds(foxes, birds, fleeingBirds, farm);
         } else if (!birds.isEmpty()) {
             resolveBirds(birds, farm);
@@ -319,6 +320,42 @@ public class Game {
 }
     
     private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm, List<Map.Entry<Player, Card>> otherBirdsAndFoxes) {
+        if (fleeingBirds.isEmpty()) {
+            return;
+        }
+    
+        Map.Entry<Player, Card> fleeingBird = fleeingBirds.get(0);
+        Player player = fleeingBird.getKey();
+    
+        if (otherBirdsAndFoxes.isEmpty()) {
+            // Fleeing bird is alone, it eats all the corn
+            for (CornCube corn : farm.getCornCubes()) {
+                player.addToScore(corn);
+            }
+            farm.clearCorn();
+            System.out.println(player.getName() + "'s bird eats all the corn!");
+        } else {
+            // Fleeing bird takes one green corn (if any) before everything else resolves
+            boolean tookGreenCorn = false;
+            Iterator<CornCube> iterator = farm.getCornCubes().iterator();
+            while (iterator.hasNext()) {
+                CornCube corn = iterator.next();
+                if (corn.getPoints() == 1) {
+                    player.addToScore(corn);
+                    iterator.remove();
+                    tookGreenCorn = true;
+                    break;
+                }
+            }
+            if (tookGreenCorn) {
+                System.out.println(player.getName() + "'s bird flees with a green corn.");
+            } else {
+                System.out.println(player.getName() + "'s bird flees without any green corn.");
+            }
+        }
+    }
+
+    private void resolveFleeingBirdDiscard(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm, List<Map.Entry<Player, Card>> otherBirdsAndFoxes) {
         if (fleeingBirds.isEmpty()) {
             return;
         }
