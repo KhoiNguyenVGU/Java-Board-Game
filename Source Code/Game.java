@@ -82,6 +82,7 @@ public class Game {
 
         while (true) {
             System.out.println("\n--- New Round ---");
+            System.out.println("Players: " + players.size());
             printGameState();
 
             // Step 1: Players pick cards
@@ -109,9 +110,9 @@ public class Game {
             // Display the number of cards left in the deck
             System.out.println("\nDeck Count: " + deck.size());
             System.out.println("Discard Pile: " + discardPile.size());
-            for (Card card : discardPile) {
-                System.out.println(card);
-            }
+            // for (Card card : discardPile) {
+            //     System.out.println(card);
+            // }
 
             // Step 3: Check if the game should end
             if (greenCornCount + blueCornCount + yellowCornCount >= 6)
@@ -435,11 +436,15 @@ public class Game {
     }
 
     private void dealNewCards() {
+        if (deck.size() < 5 * players.size()) {
+            Collections.shuffle(discardPile);
+            deck.addAll(discardPile);
+            discardPile.clear();
+        }
+    
         for (Player player : players) {
             for (int i = 0; i < 5; i++) {
-                if (!deck.isEmpty()) {
                     player.addCard(deck.remove(0));
-                }
             }
         }
     }
@@ -450,7 +455,7 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        Game game = new Game(3); // Example with 3 players
+        Game game = new Game(5); // Example with 3 players
         game.startGame();
     }
 }
