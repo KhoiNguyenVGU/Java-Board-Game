@@ -39,19 +39,19 @@ public class Player {
             if (obj instanceof Card) {
                 Card card = (Card) obj;
                 total += card.getValue();
-                System.out.println("Added Card value: " + card.getValue());
+                // System.out.println("Added Card value: " + card.getValue());
             } else if (obj instanceof CornCube) {
                 CornCube cornCube = (CornCube) obj;
                 total += cornCube.getPoints();
-                System.out.println("Added CornCube points: " + cornCube.getPoints());
+                // System.out.println("Added CornCube points: " + cornCube.getPoints());
             } else if (obj instanceof Integer) {
                 total += (Integer) obj;
-                System.out.println("Added Integer points: " + obj);
+                // System.out.println("Added Integer points: " + obj);
             } else {
-                System.out.println("Unknown object in scorePile: " + obj.getClass().getName());
+                // System.out.println("Unknown object in scorePile: " + obj.getClass().getName());
             }
         }
-        System.out.println("Total score: " + total);
+        // System.out.println("Total score: " + total);
         return total;
     }
 

@@ -455,7 +455,12 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        Game game = new Game(5); // Example with 3 players
+        System.out.println("Enter the number of players: ");
+        Scanner scanner = new Scanner(System.in);
+        int playerCount = scanner.nextInt();
+        
+        Game game = new Game(playerCount); // Example with 3 players
         game.startGame();
+        scanner.close();
     }
 }
