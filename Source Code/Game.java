@@ -455,10 +455,12 @@ public class Game {
     }
 
     public static void main(String[] args) {
-        System.out.println("Enter the number of players: ");
         Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to Hick Hack!");
+        System.out.print("Please enter the number of players: ");
         int playerCount = scanner.nextInt();
-        
+
         Game game = new Game(playerCount); // Example with 3 players
         game.startGame();
         scanner.close();
