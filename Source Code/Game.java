@@ -1,5 +1,9 @@
 import java.util.*;
 
+/**
+ * The Game class represents the main game logic for the board game.
+ * It manages the farms, players, deck, and game rounds.
+ */
 public class Game {
     private List<Farm> farms = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
@@ -11,6 +15,11 @@ public class Game {
     int blueCornCount = 26;
     int yellowCornCount = 26;
 
+    /**
+     * Constructs a new Game with the specified number of players.
+     *
+     * @param playerCount the number of players
+     */
     public Game(int playerCount) {
         initializeFarms();
         initializeDeck();
@@ -18,12 +27,18 @@ public class Game {
         addInitialCorn();
     }
 
+    /**
+     * Initializes the farms with predefined colors.
+     */
     private void initializeFarms() {
         for (String color : Arrays.asList("Red", "Blue", "Green", "Yellow", "Purple", "Orange")) {
             farms.add(new Farm(color));
         }
     }
 
+    /**
+     * Initializes the deck with cards of different types and colors.
+     */
     private void initializeDeck() {
         String[] colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange"};
         for (String color : colors) {
@@ -46,6 +61,11 @@ public class Game {
         Collections.shuffle(deck);
     }
 
+    /**
+     * Initializes the players with the specified number of players.
+     *
+     * @param playerCount the number of players
+     */
     private void initializePlayers(int playerCount) {
         for (int i = 1; i <= playerCount; i++) {
             Player player = new Player("Player " + i);
@@ -54,6 +74,9 @@ public class Game {
         }
     }
 
+    /**
+     * Adds initial corn cubes to the farms.
+     */
     private void addInitialCorn() {
         Random random = new Random();
         CornCube.CornType[] cornTypes = CornCube.CornType.values();
@@ -76,6 +99,9 @@ public class Game {
         }
     }
 
+    /**
+     * Starts the game and manages the game rounds.
+     */
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
 
@@ -119,13 +145,9 @@ public class Game {
             // }
 
             // Step 3: Check if the game should end
-            if (greenCornCount + blueCornCount + yellowCornCount >= 6)
-            {
+            if (greenCornCount + blueCornCount + yellowCornCount >= 6) {
                 addCornToFarms();
-            }
-
-            else
-            {
+            } else {
                 System.out.println("\n--- Game Over ---");
                 declareWinner();
                 break;
@@ -138,10 +160,20 @@ public class Game {
         }
     }
 
+    /**
+     * Prints the current state of the farms.
+     */
     private void printFarms() {
         for (Farm farm : farms) System.out.println(farm);
     }
 
+    /**
+     * Allows a player to pick a card from their hand.
+     *
+     * @param player the player picking a card
+     * @param scanner the scanner for input
+     * @return the chosen card
+     */
     private Card pickCardForPlayer(Player player, Scanner scanner) {
         System.out.println("\n" + player.getName() + ", choose a card to play:");
         List<Card> hand = player.getHand();
@@ -159,6 +191,11 @@ public class Game {
         return hand.remove(choice);
     }
 
+    /**
+     * Resolves the cards chosen by the players.
+     *
+     * @param chosenCards the map of players and their chosen cards
+     */
     private void resolveCards(Map<Player, Card> chosenCards) {
         // Group the cards by their color
         Map<String, List<Map.Entry<Player, Card>>> groupedCards = new HashMap<>();
@@ -187,8 +224,13 @@ public class Game {
             System.out.println(player.getName() + " (Score: " + player.calculateScore() + ")\n");
         }
     }
-    
 
+    /**
+     * Resolves the actions for a specific farm based on the cards played.
+     *
+     * @param cards the list of player-card entries
+     * @param farm the farm to resolve
+     */
     private void resolveFarm(List<Map.Entry<Player, Card>> cards, Farm farm) {
         List<Map.Entry<Player, Card>> birds = new ArrayList<>();
         List<Map.Entry<Player, Card>> foxes = new ArrayList<>();
@@ -223,10 +265,16 @@ public class Game {
         }
     }
 
+    /**
+     * Resolves the actions for birds on a farm.
+     *
+     * @param birds the list of player-card entries for birds
+     * @param farm the farm to resolve
+     */
     private void resolveBirds(List<Map.Entry<Player, Card>> birds, Farm farm) {
         // Sort birds list to ensure Player 1 rolls first
         birds.sort(Comparator.comparing(entry -> entry.getKey().getName()));
-    
+
         if (birds.size() == 1) {
             Map.Entry<Player, Card> bird = birds.get(0);
             Player player = bird.getKey();
@@ -255,20 +303,28 @@ public class Game {
             farm.clearCorn();
             System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!");
         }
-    
+
         // Add played bird cards to discard pile
         for (Map.Entry<Player, Card> bird : birds) {
             discardPile.add(bird.getValue());
         }
     }
     
+    /**
+     * Resolves the actions for foxes and birds on a farm.
+     *
+     * @param foxes the list of player-card entries for foxes
+     * @param birds the list of player-card entries for birds
+     * @param fleeingBirds the list of player-card entries for fleeing birds
+     * @param farm the farm to resolve
+     */
     private void resolveFoxesAndBirds(List<Map.Entry<Player, Card>> foxes, List<Map.Entry<Player, Card>> birds, List<Map.Entry<Player, Card>> fleeingBirds, Farm farm) {
         // Sort foxes list to ensure Player 1 rolls first
         foxes.sort(Comparator.comparing(entry -> entry.getKey().getName()));
-    
+
         Map.Entry<Player, Card> winningFox = foxes.get(0);
         int maxRoll = -1;
-    
+
         if (foxes.size() > 1) {
             for (Map.Entry<Player, Card> fox : foxes) {
                 int diceRoll = die.roll();
@@ -281,20 +337,20 @@ public class Game {
                 }
             }
         }
-    
+
         List<Map.Entry<Player, Card>> allBirds = new ArrayList<>(birds);
         allBirds.addAll(fleeingBirds);
-    
+
         // List to keep track of eaten birds
         List<Map.Entry<Player, Card>> eatenBirds = new ArrayList<>();
-    
+
         for (Map.Entry<Player, Card> bird : allBirds) {
             winningFox.getKey().addToScore(bird.getValue());
             eatenBirds.add(bird); // Add bird to eaten birds list
         }
 
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
-    
+
         // Add played fox cards to discard pile
         for (Map.Entry<Player, Card> fox : foxes) {
             discardPile.add(fox.getValue());
@@ -307,14 +363,28 @@ public class Game {
         }
     }
 
+    /**
+     * Resolves the actions for foxes on a farm.
+     *
+     * @param foxes the list of player-card entries for foxes
+     */
     private void resolveFoxes(List<Map.Entry<Player, Card>> foxes) {
-    // Add played fox cards to discard pile
-    for (Map.Entry<Player, Card> fox : foxes) {
-        discardPile.add(fox.getValue());
-        System.out.println(fox.getKey().getName() + "'s fox eats nothing!");
+        foxes.sort(Comparator.comparing(entry -> entry.getKey().getName()));
+        
+        // Add played fox cards to discard pile
+        for (Map.Entry<Player, Card> fox : foxes) {
+            discardPile.add(fox.getValue());
+            System.out.println(fox.getKey().getName() + "'s fox eats nothing!");
+        }
     }
-}
     
+    /**
+     * Resolves the actions for fleeing birds on a farm.
+     *
+     * @param fleeingBirds the list of player-card entries for fleeing birds
+     * @param farm the farm to resolve
+     * @param otherBirdsAndFoxes the list of other birds and foxes on the farm
+     */
     private void resolveFleeingBird(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm, List<Map.Entry<Player, Card>> otherBirdsAndFoxes) {
         if (fleeingBirds.isEmpty()) {
             return;
@@ -351,6 +421,13 @@ public class Game {
         }
     }
 
+    /**
+     * Resolves the actions for fleeing birds on a farm and discards them.
+     *
+     * @param fleeingBirds the list of player-card entries for fleeing birds
+     * @param farm the farm to resolve
+     * @param otherBirdsAndFoxes the list of other birds and foxes on the farm
+     */
     private void resolveFleeingBirdDiscard(List<Map.Entry<Player, Card>> fleeingBirds, Farm farm, List<Map.Entry<Player, Card>> otherBirdsAndFoxes) {
         if (fleeingBirds.isEmpty()) {
             return;
@@ -392,6 +469,9 @@ public class Game {
         }
     }
 
+    /**
+     * Adds corn cubes to the farms.
+     */
     private void addCornToFarms() {
         Random random = new Random();
         List<CornCube.CornType> availableCornTypes = new ArrayList<>();
@@ -430,6 +510,9 @@ public class Game {
         }
     }
 
+    /**
+     * Deals new cards to the players.
+     */
     private void dealNewCards() {
         if (deck.size() < 5 * players.size()) {
             Collections.shuffle(discardPile);
@@ -444,11 +527,19 @@ public class Game {
         }
     }
 
+    /**
+     * Declares the winner of the game.
+     */
     private void declareWinner() {
         Player winner = players.stream().max(Comparator.comparingInt(Player::calculateScore)).orElse(null);
         System.out.println("The winner is " + winner.getName() + " with " + winner.calculateScore() + " points!");
     }
 
+    /**
+     * The main method to start the game.
+     *
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
