@@ -217,7 +217,7 @@ public class Game {
         }
     
         // Display player scores after resolving all actions
-        System.out.println("\n--- Player Scores After This Turn ---");
+        System.out.println("--- Player Scores After This Turn ---");
         for (Player player : players) {
             System.out.println(player.getName() + " (Score: " + player.calculateScore() + ")\n");
         }
@@ -280,7 +280,7 @@ public class Game {
                 player.addToScore(corn);
             }
             farm.clearCorn();
-            System.out.println(player.getName() + "'s bird eats all the corn!");
+            System.out.println(player.getName() + "'s bird eats all the corn!\n");
         } else {
             // Birds fight for the corn
             Map.Entry<Player, Card> winner = birds.get(0);
@@ -295,11 +295,14 @@ public class Game {
                     winner = bird;
                 }
             }
+
+            System.out.println();
+
             for (CornCube corn : farm.getCornCubes()) {
                 winner.getKey().addToScore(corn);
             }
             farm.clearCorn();
-            System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!");
+            System.out.println(winner.getKey().getName() + " wins the fight and takes the corn!\n");
         }
 
         // Add played bird cards to discard pile
@@ -336,6 +339,8 @@ public class Game {
             }
         }
 
+        System.out.println();
+
         List<Map.Entry<Player, Card>> allBirds = new ArrayList<>(birds);
         allBirds.addAll(fleeingBirds);
 
@@ -347,7 +352,7 @@ public class Game {
             eatenBirds.add(bird); // Add bird to eaten birds list
         }
 
-        System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
+        System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!\n");
 
         // Add played fox cards to discard pile
         for (Map.Entry<Player, Card> fox : foxes) {
@@ -374,6 +379,8 @@ public class Game {
             discardPile.add(fox.getValue());
             System.out.println(fox.getKey().getName() + "'s fox eats nothing!");
         }
+
+        System.out.println();
     }
     
     /**
@@ -397,7 +404,7 @@ public class Game {
                 player.addToScore(corn);
             }
             farm.clearCorn();
-            System.out.println(player.getName() + "'s bird eats all the corn!");
+            System.out.println(player.getName() + "'s bird eats all the corn!\n");
         } else {
             // Fleeing bird takes one green corn (if any) before everything else resolves
             boolean tookGreenCorn = false;
@@ -412,9 +419,9 @@ public class Game {
                 }
             }
             if (tookGreenCorn) {
-                System.out.println(player.getName() + "'s bird flees with a green corn.");
+                System.out.println(player.getName() + "'s bird flees with a green corn!\n");
             } else {
-                System.out.println(player.getName() + "'s bird flees without any green corn.");
+                System.out.println(player.getName() + "'s bird flees without any green corn!\n");
             }
         }
     }
@@ -440,7 +447,7 @@ public class Game {
                 player.addToScore(corn);
             }
             farm.clearCorn();
-            System.out.println(player.getName() + "'s bird eats all the corn!");
+            System.out.println(player.getName() + "'s bird eats all the corn!\n");
         } else {
             // Fleeing bird takes one green corn (if any) before everything else resolves
             boolean tookGreenCorn = false;
@@ -455,9 +462,9 @@ public class Game {
                 }
             }
             if (tookGreenCorn) {
-                System.out.println(player.getName() + "'s bird flees with a green corn.");
+                System.out.println(player.getName() + "'s bird flees with a green corn!\n");
             } else {
-                System.out.println(player.getName() + "'s bird flees without any green corn.");
+                System.out.println(player.getName() + "'s bird flees without any green corn!\n");
             }
         }
     
