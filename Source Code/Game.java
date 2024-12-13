@@ -154,9 +154,7 @@ public class Game {
             }
 
             // Step 4: Deal new cards to players
-            if (players.get(0).getHand().isEmpty()) {
-                dealNewCards();
-            }
+            dealNewCards();
         }
     }
 
@@ -514,16 +512,14 @@ public class Game {
      * Deals new cards to the players.
      */
     private void dealNewCards() {
-        if (deck.size() < 5 * players.size()) {
+        if (deck.size() < players.size()) {
             Collections.shuffle(discardPile);
             deck.addAll(discardPile);
             discardPile.clear();
         }
     
         for (Player player : players) {
-            for (int i = 0; i < 5; i++) {
-                    player.addCard(deck.remove(0));
-            }
+            player.addCard(deck.remove(0));
         }
     }
 
