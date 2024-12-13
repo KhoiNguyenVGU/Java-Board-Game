@@ -19,17 +19,12 @@ public class Player {
     }
 
     public void addToScore(Object item) {
-        if (item instanceof Integer) {
-            // Handle integer points directly
-            scorePile.add(item);
-        } else if (item instanceof Card) {
+        if (item instanceof Card) {
             // Handle card directly
             scorePile.add(item);
         } else if (item instanceof CornCube) {
             // Handle CornCube directly
             scorePile.add(item);
-        } else {
-            System.out.println("Unknown object in addToScore: " + item.getClass().getName());
         }
     }
 
@@ -44,11 +39,6 @@ public class Player {
                 CornCube cornCube = (CornCube) obj;
                 total += cornCube.getPoints();
                 // System.out.println("Added CornCube points: " + cornCube.getPoints());
-            } else if (obj instanceof Integer) {
-                total += (Integer) obj;
-                // System.out.println("Added Integer points: " + obj);
-            } else {
-                // System.out.println("Unknown object in scorePile: " + obj.getClass().getName());
             }
         }
         // System.out.println("Total score: " + total);
@@ -63,13 +53,9 @@ public class Player {
             } else if (obj instanceof CornCube) {
                 CornCube cornCube = (CornCube) obj;
                 System.out.println("CornCube: " + cornCube);
-            } else if (obj instanceof Integer) {
-                System.out.println("Integer points: " + obj);
-            } else {
-                System.out.println("Unknown object: " + obj.getClass().getName());
             }
         }
-        System.out.println("\n");
+        System.out.print("\n");
     }
 
     @Override

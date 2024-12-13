@@ -10,7 +10,6 @@ public class Game {
     int greenCornCount = 26;
     int blueCornCount = 26;
     int yellowCornCount = 26;
-    // int deckCount = 60 - 5 * players.size();
 
     public Game(int playerCount) {
         initializeFarms();
@@ -81,11 +80,13 @@ public class Game {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\n--- New Round ---");
-            System.out.println("Players: " + players.size());
-            printGameState();
+            System.out.println("\n*** New Round ***\n");
+            System.out.println("--- Farms ---");
+            printFarms();
+            System.out.print("\n");
 
             // Step 1: Players pick cards
+            System.out.println("--- Players Pick Cards ---");
             Map<Player, Card> chosenCards = new HashMap<>();
             for (Player player : players) {
                 Card card = pickCardForPlayer(player, scanner);
@@ -93,22 +94,25 @@ public class Game {
             }
 
             // Step 2: Resolve the cards
+            System.out.println("\n--- Resolving Cards ---");
             resolveCards(chosenCards);
 
             // Display score piles for each player
+            System.out.println("--- Player Score Pile ---");
             for (Player player : players) {
                 System.out.println(player.getName() + "'s score pile:");
                 player.printScorePile();
             }
 
             // Display the number of corn of each type
-            System.out.println("\n--- Corn Count ---");
+            System.out.println("--- Corn Count ---");
             System.out.println("Green Corn Count: " + greenCornCount);
             System.out.println("Blue Corn Count: " + blueCornCount);
             System.out.println("Yellow Corn Count: " + yellowCornCount);
 
             // Display the number of cards left in the deck
-            System.out.println("\nDeck Count: " + deck.size());
+            System.out.println("\n--- Deck Count ---");
+            System.out.println("Deck Count: " + deck.size());
             System.out.println("Discard Pile: " + discardPile.size());
             // for (Card card : discardPile) {
             //     System.out.println(card);
@@ -130,27 +134,16 @@ public class Game {
             // Step 4: Deal new cards to players
             if (players.get(0).getHand().isEmpty()) {
                 dealNewCards();
-                // deckCount = 5 * players.size();
             }
-
-            // Check if the game should end
-            // if (greenCornCount + blueCornCount + yellowCornCount == 0) {
-            //     System.out.println("\n--- Game Over ---");
-            //     declareWinner();
-            //     break;
-            // }
         }
     }
 
-    private void printGameState() {
-        System.out.println("Farms:");
+    private void printFarms() {
         for (Farm farm : farms) System.out.println(farm);
-        System.out.println("Players:");
-        for (Player player : players) System.out.println(player);
     }
 
     private Card pickCardForPlayer(Player player, Scanner scanner) {
-        System.out.println(player.getName() + ", choose a card to play:");
+        System.out.println("\n" + player.getName() + ", choose a card to play:");
         List<Card> hand = player.getHand();
 
         for (int i = 0; i < hand.size(); i++) {
@@ -193,7 +186,6 @@ public class Game {
         for (Player player : players) {
             System.out.println(player.getName() + " (Score: " + player.calculateScore() + ")\n");
         }
-        System.out.println();
     }
     
 
@@ -277,14 +269,16 @@ public class Game {
         Map.Entry<Player, Card> winningFox = foxes.get(0);
         int maxRoll = -1;
     
-        for (Map.Entry<Player, Card> fox : foxes) {
-            int diceRoll = die.roll();
-            int roll = diceRoll + fox.getValue().getValue();
-            System.out.println(fox.getKey().getName() + " rolled a dice value of " + diceRoll);
-            System.out.println(fox.getKey().getName() + " has a total value of " + roll);
-            if (roll > maxRoll) {
-                maxRoll = roll;
-                winningFox = fox;
+        if (foxes.size() > 1) {
+            for (Map.Entry<Player, Card> fox : foxes) {
+                int diceRoll = die.roll();
+                int roll = diceRoll + fox.getValue().getValue();
+                System.out.println(fox.getKey().getName() + " rolled a dice value of " + diceRoll);
+                System.out.println(fox.getKey().getName() + " has a total value of " + roll);
+                if (roll > maxRoll) {
+                    maxRoll = roll;
+                    winningFox = fox;
+                }
             }
         }
     
@@ -298,7 +292,7 @@ public class Game {
             winningFox.getKey().addToScore(bird.getValue());
             eatenBirds.add(bird); // Add bird to eaten birds list
         }
-        // farm.clearCorn();
+
         System.out.println(winningFox.getKey().getName() + "'s fox eats all the birds!");
     
         // Add played fox cards to discard pile
@@ -317,6 +311,7 @@ public class Game {
     // Add played fox cards to discard pile
     for (Map.Entry<Player, Card> fox : foxes) {
         discardPile.add(fox.getValue());
+        System.out.println(fox.getKey().getName() + "'s fox eats nothing!");
     }
 }
     
@@ -457,11 +452,11 @@ public class Game {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Welcome to Hick Hack!");
+        System.out.println("\n*** Welcome to Hick Hack! ***");
         System.out.print("Please enter the number of players: ");
         int playerCount = scanner.nextInt();
 
-        Game game = new Game(playerCount); // Example with 3 players
+        Game game = new Game(playerCount);
         game.startGame();
         scanner.close();
     }
