@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane alignment="CENTER" hgap="10.0" vgap="10.0" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.GameController">
+    <children>
+        <!-- Area 1 -->
+        <StackPane fx:id="area1" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <children>
+                <ImageView fx:id="image1" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Area 2 -->
+        <StackPane fx:id="area2" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <children>
+                <ImageView fx:id="image2" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Area 3 -->
+        <StackPane fx:id="area3" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <children>
+                <ImageView fx:id="image3" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Area 4 -->
+        <StackPane fx:id="area4" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <children>
+                <ImageView fx:id="image4" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Area 5 -->
+        <StackPane fx:id="area5" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <children>
+                <ImageView fx:id="image5" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Area 6 -->
+        <StackPane fx:id="area6" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <children>
+                <ImageView fx:id="image6" fitHeight="250" fitWidth="250" preserveRatio="false" />
+            </children>
+        </StackPane>
+
+        <!-- Placeholder for dynamically generated cards -->
+        <GridPane fx:id="cardGrid" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="3" GridPane.rowSpan="8" hgap="10.0" vgap="10.0">
+            <!-- Cards will be added here dynamically -->
+        </GridPane>
+
+        <!-- Pile for shuffled cards -->
+        <VBox fx:id="cardPile" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+            <!-- Shuffled cards will be added here -->
+        </VBox>
+
+        <!-- Placeholder for dynamically generated cubes -->
+        <VBox fx:id="cubeBox" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.rowSpan="8" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+            <FlowPane fx:id="cubeFlowPane" hgap="5" vgap="5" />
+        </VBox>
+    </children>
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+</GridPane>

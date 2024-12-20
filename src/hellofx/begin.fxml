@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="673.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.BeginController">
+   <children>
+      <Label layoutX="283.0" layoutY="61.0" text="HickHack Game" />
+      <TextField fx:id="tfName" layoutX="250.0" layoutY="141.0" promptText="Enter Number of Players" />
+      <Button fx:id="btnOkDetect" layoutX="283.0" layoutY="287.0" mnemonicParsing="false" onAction="#onOkButtonPressed" prefHeight="44.0" prefWidth="84.0" text="Ok" />
+   </children>
+</AnchorPane>
