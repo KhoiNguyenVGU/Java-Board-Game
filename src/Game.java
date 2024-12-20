@@ -106,7 +106,7 @@ public class Game {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("\n*** New Round ***\n");
+            System.out.println("\n*** New Turn ***\n");
             System.out.println("--- Farms ---");
             printFarms();
             System.out.print("\n");
