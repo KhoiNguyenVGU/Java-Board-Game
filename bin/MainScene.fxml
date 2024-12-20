@@ -1,15 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainSceneController">
+<GridPane alignment="TOP_CENTER" gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="448.0" prefWidth="678.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
    <children>
-      <Label layoutX="14.0" layoutY="14.0" prefHeight="18.0" prefWidth="569.0" text="Hick Hack" />
-      <TextField fx:id="textTitle" layoutX="14.0" layoutY="32.0" prefHeight="26.0" prefWidth="563.0" />
-      <Button layoutX="274.0" layoutY="355.0" mnemonicParsing="false" onAction="#OnClick" text="OK" />
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <Pane prefHeight="222.0" prefWidth="271.0">
+               <children>
+                  <ImageView fitHeight="224.0" fitWidth="226.0" layoutX="-3.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20143410.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="225.0" fitWidth="263.0" layoutX="2.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123804.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </VBox>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+         <children>
+            <Pane layoutX="-13.0" layoutY="1.0">
+               <children>
+                  <ImageView fitHeight="224.0" fitWidth="256.0" layoutX="7.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20144102.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="225.0" fitWidth="230.0" layoutX="14.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123811.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
+         <children>
+            <Pane layoutX="5.0" layoutY="-4.0">
+               <children>
+                  <ImageView fitHeight="232.0" fitWidth="397.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20144716.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="224.0" fitWidth="230.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123816.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+         <children>
+            <ImageView fitHeight="224.0" fitWidth="226.0" layoutX="1.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20144858.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="224.0" fitWidth="280.0" layoutX="1.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123825.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <ImageView fitHeight="224.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20144938.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="225.0" fitWidth="226.0" layoutX="3.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123831.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Pane prefHeight="308.0" prefWidth="267.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <children>
+            <ImageView fitHeight="224.0" fitWidth="220.0" layoutX="5.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Pictures/Screenshots/Screenshot%202024-12-18%20145010.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="224.0" fitWidth="256.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../OneDrive%20-%20student.vgu.edu.vn/Pictures/Screenshots/Screenshot%202024-12-19%20123836.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
    </children>
-</AnchorPane>
+</GridPane>

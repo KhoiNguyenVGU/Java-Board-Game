@@ -31,7 +31,7 @@ public class Game {
      * Initializes the farms with predefined colors.
      */
     private void initializeFarms() {
-        for (String color : Arrays.asList("Red", "Blue", "Green", "Yellow", "Purple", "Orange")) {
+        for (String color : Arrays.asList("Black", "Blue", "Green", "Yellow", "Pink", "Red")) {
             farms.add(new Farm(color));
         }
     }
@@ -40,7 +40,7 @@ public class Game {
      * Initializes the deck with cards of different types and colors.
      */
     private void initializeDeck() {
-        String[] colors = {"Red", "Blue", "Green", "Yellow", "Purple", "Orange"};
+        String[] colors = {"Black", "Blue", "Green", "Yellow", "Pink", "Red"};
         for (String color : colors) {
             // Add 2 birds of type 3 and 4
             for (int i = 0; i < 2; i++) {
