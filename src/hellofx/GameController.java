@@ -203,31 +203,35 @@ public class GameController {
     }
 
     private void addCardToPlayerPile(Card card, VBox playerPile) {
-    StackPane cardPane = new StackPane();
-    cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
-    cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
-    Label label = new Label(card.toString());
-    cardPane.getChildren().add(label);
-
-    // Add click event handler to the card
-    cardPane.setOnMouseClicked(event -> {
-        if (playerPile == player1CardPile && currentPlayerTurn == 1 && !player1CardSelected) {
-            handleCardSelection(card, playerPile, cardPane);
-            player1CardSelected = true;
-            currentPlayerTurn = 2; // Move to the next player
-        } else if (playerPile == player2CardPile && currentPlayerTurn == 2 && !player2CardSelected) {
-            handleCardSelection(card, playerPile, cardPane);
-            player2CardSelected = true;
-            currentPlayerTurn = 3; // Move to the next player
-        } else if (playerPile == player3CardPile && currentPlayerTurn == 3 && !player3CardSelected) {
-            handleCardSelection(card, playerPile, cardPane);
-            player3CardSelected = true;
-            currentPlayerTurn = 1; // Reset to the first player
-        }
-    });
-
-    playerPile.getChildren().add(cardPane);
-}
+        StackPane cardPane = new StackPane();
+        cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
+        cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
+        Label label = new Label(card.toString());
+        cardPane.getChildren().add(label);
+        cardPane.setUserData(card); // Store the card as user data in the cardPane
+    
+        // Add click event handler to the card
+        cardPane.setOnMouseClicked(event -> {
+            if (playerPile == player1CardPile && currentPlayerTurn == 1 && !player1CardSelected) {
+                handleCardSelection(card, playerPile, cardPane);
+                player1CardSelected = true;
+                currentPlayerTurn = 2; // Move to the next player
+            } else if (playerPile == player2CardPile && currentPlayerTurn == 2 && !player2CardSelected) {
+                handleCardSelection(card, playerPile, cardPane);
+                player2CardSelected = true;
+                currentPlayerTurn = 3; // Move to the next player
+            } else if (playerPile == player3CardPile && currentPlayerTurn == 3 && !player3CardSelected) {
+                handleCardSelection(card, playerPile, cardPane);
+                player3CardSelected = true;
+                currentPlayerTurn = 1; // Reset to the first player
+            }
+    
+            // Update the player's score
+            updatePlayerScores();
+        });
+    
+        playerPile.getChildren().add(cardPane);
+    }
 
     private void handleCardSelection(Card card, VBox playerPile, StackPane cardPane) {
         // Handle the card selection
@@ -235,6 +239,12 @@ public class GameController {
         // Perform desired action with the selected card
         playerPile.getChildren().remove(cardPane);
         moveCardToCorrectArea(card, cardPane);
+        // Enable the add cards buttons
+        addCardsButton1.setDisable(false);
+        addCardsButton2.setDisable(false);
+        addCardsButton3.setDisable(false);
+
+        updatePlayerScores(); // Update the player's score after selecting a card
     }
 
     private void moveCardToCorrectArea(Card card, StackPane cardPane) {
@@ -277,6 +287,11 @@ public class GameController {
             }
         }
         updateAddCardsButtons();
+
+        // Disable the add cards buttons after adding new cards
+        addCardsButton1.setDisable(true);
+        addCardsButton2.setDisable(true);
+        addCardsButton3.setDisable(true);
     }
 
     // Call this method at each turn to add 5 cards to the player pile
@@ -297,23 +312,26 @@ public class GameController {
 
     @FXML
     private void handleAddCardsToPlayer1Action() {
-        if (player1CardPile.getChildren().size() == 4) {
-            addCardsToPlayerPile(1, player1CardPile);
-        }
+        addCardsToPlayerPile(1, player1CardPile);
+        player1CardSelected = false; // Reset the flag after adding a card
+        updateAddCardsButtons(); // Update the buttons after adding a card
+        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     @FXML
     private void handleAddCardsToPlayer2Action() {
-        if (player2CardPile.getChildren().size() == 4) {
-            addCardsToPlayerPile(1, player2CardPile);
-        }
+        addCardsToPlayerPile(1, player2CardPile);
+        player2CardSelected = false; // Reset the flag after adding a card
+        updateAddCardsButtons(); // Update the buttons after adding a card
+        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     @FXML
     private void handleAddCardsToPlayer3Action() {
-        if (player3CardPile.getChildren().size() == 4) {
-            addCardsToPlayerPile(1, player3CardPile);
-        }
+        addCardsToPlayerPile(1, player3CardPile);
+        player3CardSelected = false; // Reset the flag after adding a card
+        updateAddCardsButtons(); // Update the buttons after adding a card
+        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     private void placeCubesInAreas() {
@@ -382,6 +400,10 @@ public class GameController {
     }
 
     private void updatePlayerScores() {
+        player1Score = calculatePlayerScore(player1CardPile);
+        player2Score = calculatePlayerScore(player2CardPile);
+        player3Score = calculatePlayerScore(player3CardPile);
+
         player1ScoreLabel.setText("Player 1 Score: " + player1Score);
         player2ScoreLabel.setText("Player 2 Score: " + player2Score);
         player3ScoreLabel.setText("Player 3 Score: " + player3Score);
@@ -406,6 +428,7 @@ public class GameController {
         chooseCardFromPlayer(1);
         chooseCardFromPlayer(2);
         chooseCardFromPlayer(3);
+        
     }
     
     private void chooseCardFromPlayer(int playerNumber) {
@@ -413,5 +436,74 @@ public class GameController {
         // This is a placeholder for the actual implementation
         System.out.println("Choosing card from player " + playerNumber);
     }
+
+    private int calculatePlayerScore(VBox playerPile) {
+        int totalScore = 0;
+        List<Card> cards = new ArrayList<>();
+        for (javafx.scene.Node node : playerPile.getChildren()) {
+            if (node instanceof StackPane) {
+                StackPane cardPane = (StackPane) node;
+                Card card = (Card) cardPane.getUserData();
+                if (card != null) {
+                    cards.add(card);
+                }
+            }
+        }
+    
+        if (cards.size() == 1 && cards.get(0).isBird()) {
+            // If the card is a bird and it is alone, the player's score will be the total value of that area
+            totalScore += getAreaTotalValue(cards.get(0).getColor());
+        } else if (cards.size() == 2) {
+            // If there are 2 cards, add the value of each card with the value of the dice
+            int diceValue = rollDice();
+            int card1ValueWithDice = cards.get(0).getValue() + diceValue;
+            int card2ValueWithDice = cards.get(1).getValue() + diceValue;
+            if (card1ValueWithDice > card2ValueWithDice) {
+                totalScore += getAreaTotalValue(cards.get(0).getColor());
+            } else if (card2ValueWithDice > card1ValueWithDice) {
+                totalScore += getAreaTotalValue(cards.get(1).getColor());
+            }
+        } else {
+            // Otherwise, just add the value of the cards
+            for (Card card : cards) {
+                totalScore += card.getValue();
+            }
+        }
+        return totalScore;
+    }
+
+
+    private int getAreaTotalValue(String color) {
+        StackPane area = colorToAreaMap.get(Color.valueOf(color.toUpperCase()));
+        return areaTotalValueMap.getOrDefault(area, 0);
+    }
+
+    private int rollDice() {
+        return random.nextInt(6) + 1; // Roll a dice (1-6)
+    }
+    
+    private int calculateTotalValue(VBox playerPile) {
+    int totalValue = 0;
+    for (javafx.scene.Node node : playerPile.getChildren()) {
+        if (node instanceof StackPane) {
+            StackPane cardPane = (StackPane) node;
+            Card card = (Card) cardPane.getUserData();
+            if (card != null) {
+                totalValue += card.getValue(); // Assuming Card has a getValue() method
+            }
+        }
+    }
+    return totalValue;
+}
+    
+    @FXML
+    private void handleResolveFarmAction() {
+        System.out.println("Resolving farm action...");
+    
+        // You can add additional logic here as needed
+        // For example, you might want to call updatePlayerScores() or other methods
+        updatePlayerScores();
+    }
+    
     
 }

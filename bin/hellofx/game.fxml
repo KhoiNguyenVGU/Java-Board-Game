@@ -107,6 +107,7 @@
 
         <!-- Buttons -->
         <VBox alignment="CENTER" spacing="10">
+            <Button fx:id="resolveFarmButton" text="Resolve Farm" onAction="#handleResolveFarmAction" />
             <Button fx:id="rollButton" text="Roll Dice" onAction="#roll" />
             <Button fx:id="placeCubesButton" text="Place Cubes" onAction="#handlePlaceCubesButtonAction" />
         </VBox>

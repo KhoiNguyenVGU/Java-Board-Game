@@ -50,6 +50,15 @@ public class Card {
     public String getColor() { return color; }
 
     /**
+     * Checks if the card is of type BIRD.
+     *
+     * @return true if the card is a bird, false otherwise
+     */
+    public boolean isBird() {
+        return type == Type.BIRD;
+    }
+
+    /**
      * Returns a string representation of the card.
      *
      * @return a string representation of the card
