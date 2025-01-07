@@ -80,11 +80,11 @@ public class GameController {
 
     private Map<Integer, Card> playerCardMap = new HashMap<>();
 
-    private int player1Score = 0;
-    private int player2Score = 0;
-    private int player3Score = 0;
-
     private int currentPlayerTurn = 1;
+
+    int scorePlayer1 = 0;
+    int scorePlayer2 = 0;
+    int scorePlayer3 = 0;
 
     public void setGame(Game game) {
         this.game = game;
@@ -105,7 +105,7 @@ public class GameController {
         updatePlayerScores();
         chooseCardsInOrder();
 
-        resolveFarmButton.setOnAction(event -> {
+        resolveFarmButton.setOnAction(_ -> {
             updatePlayerScores(); // Only update the scores here
         });
     }
@@ -332,7 +332,6 @@ public class GameController {
         addCardsToPlayerPile(1, player1CardPile, 1);
         player1CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
-        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     @FXML
@@ -340,7 +339,6 @@ public class GameController {
         addCardsToPlayerPile(1, player2CardPile, 2);
         player2CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
-        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     @FXML
@@ -348,7 +346,6 @@ public class GameController {
         addCardsToPlayerPile(1, player3CardPile, 3);
         player3CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
-        updatePlayerScores(); // Update the player's score after adding a card
     }
 
     private void placeCubesInAreas() {
@@ -395,7 +392,7 @@ public class GameController {
             areaTotalValueMap.put(area, totalValue);
 
             // Add a new cube to the VBox only if it has less than 6 cubes
-            if (cubeVBox.getChildren().size() < 6 && !cubeFlowPane.getChildren().isEmpty()) {
+            if (cubeVBox.getChildren().size() < 10 && !cubeFlowPane.getChildren().isEmpty()) {
                 StackPane originalCubeStack = (StackPane) cubeFlowPane.getChildren().remove(0);
 
                 // Set a margin for each cube for better stacking visualization
@@ -445,31 +442,21 @@ public class GameController {
         int player2Score = playerScores.getOrDefault(2, 0);
         int player3Score = playerScores.getOrDefault(3, 0);
     
+        scorePlayer1 += player1Score;
+        scorePlayer2 += player2Score;
+        scorePlayer3 += player3Score;
+
         // Debug: Print the calculated scores
-        System.out.println("Player 1 Score: " + player1Score);
-        System.out.println("Player 2 Score: " + player2Score);
-        System.out.println("Player 3 Score: " + player3Score);
+        System.out.println("Player 1 Score: " + scorePlayer1);
+        System.out.println("Player 2 Score: " + scorePlayer2);
+        System.out.println("Player 3 Score: " + scorePlayer3);
     
         // Update the UI or internal state with the new scores
-        player1ScoreLabel.setText("Player 1 Score: " + player1Score);
-        player2ScoreLabel.setText("Player 2 Score: " + player2Score);
-        player3ScoreLabel.setText("Player 3 Score: " + player3Score);
+        player1ScoreLabel.setText("Player 1 Score: " + scorePlayer1);
+        player2ScoreLabel.setText("Player 2 Score: " + scorePlayer2);
+        player3ScoreLabel.setText("Player 3 Score: " + scorePlayer3);
     }
 
-    private void addToPlayerScore(int playerNumber, int score) {
-        switch (playerNumber) {
-            case 1:
-                player1Score += score;
-                break;
-            case 2:
-                player2Score += score;
-                break;
-            case 3:
-                player3Score += score;
-                break;
-        }
-        updatePlayerScores();
-    }
 
     private void chooseCardsInOrder() {
         chooseCardFromPlayer(1);
@@ -505,18 +492,272 @@ public class GameController {
                 // Debug: Print the number of cards in the VBox
                 System.out.println("Number of cards in VBox for area " + area.getId() + ": " + cardVBox.getChildren().size());
     
-                // If there is only one card in the VBox, add the total value of the area to the player's score
+                // If there is only one card in the VBox
                 if (cardVBox.getChildren().size() == 1) {
                     StackPane cardPane = (StackPane) cardVBox.getChildren().get(0);
                     Card card = (Card) cardPane.getUserData();
                     int playerNumber = getPlayerNumberByCard(card);
     
-                    // Check if the card belongs to the player and is a bird
-                    if (card != null && card.getType() == Card.Type.BIRD) {
-                        int totalScore = playerScores.getOrDefault(playerNumber, 0);
-                        totalScore += areaTotalValueMap.getOrDefault(area, 0);
-                        playerScores.put(playerNumber, totalScore);
-                        System.out.println("Single bird card in VBox for player " + playerNumber + ", total score: " + totalScore);
+                    // Check if the card belongs to the player and is a bird, fox, or fleeing bird
+                    if (card != null) {
+                        if (card.getType() == Card.Type.BIRD) {
+                            int totalScore = playerScores.getOrDefault(playerNumber, 0);
+                            totalScore += areaTotalValueMap.getOrDefault(area, 0);
+                            playerScores.put(playerNumber, totalScore);
+                            System.out.println("Single bird card in VBox for player " + playerNumber + ", total score: " + totalScore);
+                        } else if (card.getType() == Card.Type.FOX) {
+                            System.out.println("Single fox card in VBox for player " + playerNumber + ", no score added.");
+                        } else if (card.getType() == Card.Type.FLEEING_BIRD) {
+                            int totalScore = playerScores.getOrDefault(playerNumber, 0);
+                            totalScore += areaTotalValueMap.getOrDefault(area, 0);
+                            playerScores.put(playerNumber, totalScore);
+                            System.out.println("Single fleeing bird card in VBox for player " + playerNumber + ", total score: " + totalScore);
+                        }
+    
+                        // Clear the cubes in the VBox
+                        clearCubesInVBox(area);
+    
+                        // Remove the VBox of cards
+                        area.getChildren().remove(cardVBox);
+                    }
+                }
+    
+                // If there are two cards in the VBox
+                if (cardVBox.getChildren().size() == 2) {
+                    Card birdCard = null;
+                    Card fleeingBirdCard = null;
+                    Card foxCard = null;
+                    int foxCount = 0;
+                    for (javafx.scene.Node node : cardVBox.getChildren()) {
+                        StackPane cardPane = (StackPane) node;
+                        Card card = (Card) cardPane.getUserData();
+                        if (card != null) {
+                            if (card.getType() == Card.Type.BIRD) {
+                                birdCard = card;
+                            } else if (card.getType() == Card.Type.FLEEING_BIRD) {
+                                fleeingBirdCard = card;
+                            } else if (card.getType() == Card.Type.FOX) {
+                                foxCard = card;
+                                foxCount++;
+                            }
+                        }
+                    }
+    
+                    // If there are two fox cards, do nothing
+                    if (foxCount == 2) {
+                        System.out.println("Two fox cards in VBox, no score added.");
+                    } else if (birdCard != null && fleeingBirdCard != null) {
+                        int fleeingBirdPlayerNumber = getPlayerNumberByCard(fleeingBirdCard);
+                        int birdPlayerNumber = getPlayerNumberByCard(birdCard);
+                        int totalValue = areaTotalValueMap.getOrDefault(area, 0);
+    
+                        // Fleeing bird gets 1 point
+                        int fleeingBirdScore = playerScores.getOrDefault(fleeingBirdPlayerNumber, 0);
+                        fleeingBirdScore += 1;
+                        playerScores.put(fleeingBirdPlayerNumber, fleeingBirdScore);
+                        System.out.println("Fleeing bird card in VBox for player " + fleeingBirdPlayerNumber + ", score: 1, total score: " + fleeingBirdScore);
+    
+                        // Bird gets the remaining total value
+                        int birdScore = playerScores.getOrDefault(birdPlayerNumber, 0);
+                        birdScore += (totalValue - 1);
+                        playerScores.put(birdPlayerNumber, birdScore);
+                        System.out.println("Bird card in VBox for player " + birdPlayerNumber + ", score: " + (totalValue - 1) + ", total score: " + birdScore);
+    
+                        // Remove the VBox of cards
+                        area.getChildren().remove(cardVBox);
+                    } else if (birdCard != null && foxCard != null) {
+                        int foxPlayerNumber = getPlayerNumberByCard(foxCard);
+                        int birdCardValue = birdCard.getValue();
+                        int totalScore = playerScores.getOrDefault(foxPlayerNumber, 0);
+                        totalScore += birdCardValue;
+                        playerScores.put(foxPlayerNumber, totalScore);
+                        System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird card value: " + birdCardValue + ", total score: " + totalScore);
+    
+                        // Remove the VBox of cards
+                        area.getChildren().remove(cardVBox);
+                    } else if (fleeingBirdCard != null && foxCard != null) {
+                        int foxPlayerNumber = getPlayerNumberByCard(foxCard);
+                        int fleeingBirdCardValue = fleeingBirdCard.getValue();
+                        int totalScore = playerScores.getOrDefault(foxPlayerNumber, 0);
+                        totalScore += fleeingBirdCardValue;
+                        playerScores.put(foxPlayerNumber, totalScore);
+                        System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by fleeing bird card value: " + fleeingBirdCardValue + ", total score: " + totalScore);
+    
+                        // Remove the VBox of cards
+                        area.getChildren().remove(cardVBox);
+                    }
+                }
+    
+                // If there are three cards in the VBox
+                if (cardVBox.getChildren().size() == 3) {
+                    List<Card> birdCards = new ArrayList<>();
+                    List<Card> foxCards = new ArrayList<>();
+                    Card fleeingBirdCard = null;
+                    for (javafx.scene.Node node : cardVBox.getChildren()) {
+                        StackPane cardPane = (StackPane) node;
+                        Card card = (Card) cardPane.getUserData();
+                        if (card != null) {
+                            if (card.getType() == Card.Type.BIRD) {
+                                birdCards.add(card);
+                            } else if (card.getType() == Card.Type.FOX) {
+                                foxCards.add(card);
+                            } else if (card.getType() == Card.Type.FLEEING_BIRD) {
+                                fleeingBirdCard = card;
+                            }
+                        }
+                    }
+    
+                    // If there are three fox cards, do nothing
+                    if (foxCards.size() == 3) {
+                        System.out.println("Three fox cards in VBox, no score added.");
+                    } 
+                    //If there are two fox cards and one fleeing bird card, fleeing bird has 1 point and the foxes fight to eat the fleeing bird
+                    else if (foxCards.size() == 2 && fleeingBirdCard != null) {
+                        int fleeingBirdPlayerNumber = getPlayerNumberByCard(fleeingBirdCard);
+                        int fleeingBirdCardValue = fleeingBirdCard.getValue();
+                        Map<Card, Integer> foxCardTotalValues = new HashMap<>();
+    
+                        // Fleeing bird gets 1 point
+                        int fleeingBirdScore = playerScores.getOrDefault(fleeingBirdPlayerNumber, 0);
+                        fleeingBirdScore += 1;
+                        playerScores.put(fleeingBirdPlayerNumber, fleeingBirdScore);
+                        System.out.println("Fleeing bird card in VBox for player " + fleeingBirdPlayerNumber + ", score: 1, total score: " + fleeingBirdScore);
+    
+                        for (Card foxCard : foxCards) {
+                            int diceRoll = random.nextInt(6) + 1; // Roll a dice for the fox card
+                            int totalValue = foxCard.getValue() + diceRoll;
+                            foxCardTotalValues.put(foxCard, totalValue);
+                            int foxPlayerNumber = getPlayerNumberByCard(foxCard);
+                            System.out.println("Player " + foxPlayerNumber + " rolled " + diceRoll + " for fox card with value " + foxCard.getValue() + ", total: " + totalValue);
+                        }
+    
+                        // Determine the fox card with the highest total value
+                        Card winningFoxCard = null;
+                        int maxTotalValue = 0;
+                        for (Map.Entry<Card, Integer> entry : foxCardTotalValues.entrySet()) {
+                            if (entry.getValue() > maxTotalValue) {
+                                maxTotalValue = entry.getValue();
+                                winningFoxCard = entry.getKey();
+                            }
+                        }
+    
+                        if (winningFoxCard != null) {
+                            int winningFoxPlayerNumber = getPlayerNumberByCard(winningFoxCard);
+                            int totalScore = playerScores.getOrDefault(winningFoxPlayerNumber, 0);
+                            totalScore += fleeingBirdCardValue;
+                            playerScores.put(winningFoxPlayerNumber, totalScore);
+                            System.out.println("Winning fox card for player " + winningFoxPlayerNumber + ", score added by fleeing bird card value: " + fleeingBirdCardValue + ", total score: " + totalScore);
+    
+                            // Do not remove the VBox of cards
+                        }
+                    }
+                    // If there are two fox cards and 1 bird card, the foxes fights to have the bird card
+                    else if (foxCards.size() == 2 && birdCards.size() == 1) {
+                        Card birdCard = birdCards.get(0);
+                        int birdCardValue = birdCard.getValue();
+                        Map<Card, Integer> foxCardTotalValues = new HashMap<>();
+    
+                        for (Card foxCard : foxCards) {
+                            int diceRoll = random.nextInt(6) + 1; // Roll a dice for the fox card
+                            int totalValue = foxCard.getValue() + diceRoll;
+                            foxCardTotalValues.put(foxCard, totalValue);
+                            int foxPlayerNumber = getPlayerNumberByCard(foxCard);
+                            System.out.println("Player " + foxPlayerNumber + " rolled " + diceRoll + " for fox card with value " + foxCard.getValue() + ", total: " + totalValue);
+                        }
+                    
+                        // Determine the fox card with the highest total value
+                        Card winningFoxCard = null;
+                        int maxTotalValue = 0;
+                        for (Map.Entry<Card, Integer> entry : foxCardTotalValues.entrySet()) {
+                            if (entry.getValue() > maxTotalValue) {
+                                maxTotalValue = entry.getValue();
+                                winningFoxCard = entry.getKey();
+                            }
+                        }
+                    
+                        if (winningFoxCard != null) {
+                            int winningFoxPlayerNumber = getPlayerNumberByCard(winningFoxCard);
+                            int totalScore = playerScores.getOrDefault(winningFoxPlayerNumber, 0);
+                            totalScore += birdCardValue;
+                            playerScores.put(winningFoxPlayerNumber, totalScore);
+                            System.out.println("Winning fox card for player " + winningFoxPlayerNumber + ", score added by bird card value: " + birdCardValue + ", total score: " + totalScore);
+                    
+                            // Remove the VBox of cards
+                            area.getChildren().remove(cardVBox);
+                        }
+                    } 
+                    // If there are two bird cards and one fox card, then the fox eat all birds
+                    else if (birdCards.size() == 2 && foxCards.size() == 1) {
+                        int foxPlayerNumber = getPlayerNumberByCard(foxCards.get(0));
+                        int birdCardValueSum = birdCards.stream().mapToInt(Card::getValue).sum();
+                        int totalScore = playerScores.getOrDefault(foxPlayerNumber, 0);
+                        totalScore += birdCardValueSum;
+                        playerScores.put(foxPlayerNumber, totalScore);
+                        System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird card values sum: " + birdCardValueSum + ", total score: " + totalScore);
+    
+                        // Remove the VBox of cards
+                        area.getChildren().remove(cardVBox);
+                    }
+                    //If there is one fox card, one bird card, and one fleeing bird card, then the fleeing bird has 1 point, the fox eat all birds
+                    else if (foxCards.size() == 1 && birdCards.size() == 1 && fleeingBirdCard != null) {
+                        int fleeingBirdPlayerNumber = getPlayerNumberByCard(fleeingBirdCard);
+                        int foxPlayerNumber = getPlayerNumberByCard(foxCards.get(0));
+                        int birdCardValue = birdCards.get(0).getValue();
+                        int fleeingBirdCardValue = fleeingBirdCard.getValue();
+                    
+                        // Fleeing bird gets 1 point
+                        int fleeingBirdScore = playerScores.getOrDefault(fleeingBirdPlayerNumber, 0);
+                        fleeingBirdScore += 1;
+                        playerScores.put(fleeingBirdPlayerNumber, fleeingBirdScore);
+                        System.out.println("Fleeing bird card in VBox for player " + fleeingBirdPlayerNumber + ", score: 1, total score: " + fleeingBirdScore);
+                    
+                        // Fox gets the value of the bird and fleeing bird
+                        int totalScore = playerScores.getOrDefault(foxPlayerNumber, 0);
+                        totalScore += birdCardValue + fleeingBirdCardValue;
+                        playerScores.put(foxPlayerNumber, totalScore);
+                        System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird and fleeing bird card values: " + (birdCardValue + fleeingBirdCardValue) + ", total score: " + totalScore);
+                    
+                    }
+                    //If there are two bird cards and one fleeing bird card, the fleeing bird has 1 points and the birds fight to have the other points
+                    else if (birdCards.size() == 2 && fleeingBirdCard != null) {
+                        int fleeingBirdPlayerNumber = getPlayerNumberByCard(fleeingBirdCard);
+                        int totalValue = areaTotalValueMap.getOrDefault(area, 0);
+                        Map<Card, Integer> birdCardTotalValues = new HashMap<>();
+    
+                        // Fleeing bird gets 1 point
+                        int fleeingBirdScore = playerScores.getOrDefault(fleeingBirdPlayerNumber, 0);
+                        fleeingBirdScore += 1;
+                        playerScores.put(fleeingBirdPlayerNumber, fleeingBirdScore);
+                        System.out.println("Fleeing bird card in VBox for player " + fleeingBirdPlayerNumber + ", score: 1, total score: " + fleeingBirdScore);
+    
+                        for (Card birdCard : birdCards) {
+                            int diceRoll = random.nextInt(6) + 1; // Roll a dice for the bird card
+                            int totalValueWithDice = birdCard.getValue() + diceRoll;
+                            birdCardTotalValues.put(birdCard, totalValueWithDice);
+                            int birdPlayerNumber = getPlayerNumberByCard(birdCard);
+                            System.out.println("Player " + birdPlayerNumber + " rolled " + diceRoll + " for bird card with value " + birdCard.getValue() + ", total: " + totalValueWithDice);
+                        }
+    
+                        // Determine the bird card with the highest total value
+                        Card winningBirdCard = null;
+                        int maxTotalValue = 0;
+                        for (Map.Entry<Card, Integer> entry : birdCardTotalValues.entrySet()) {
+                            if (entry.getValue() > maxTotalValue) {
+                                maxTotalValue = entry.getValue();
+                                winningBirdCard = entry.getKey();
+                            }
+                        }
+    
+                        if (winningBirdCard != null) {
+                            int winningBirdPlayerNumber = getPlayerNumberByCard(winningBirdCard);
+                            int totalScore = playerScores.getOrDefault(winningBirdPlayerNumber, 0);
+                            totalScore += (totalValue - 1);
+                            playerScores.put(winningBirdPlayerNumber, totalScore);
+                            System.out.println("Winning bird card for player " + winningBirdPlayerNumber + ", score added by remaining total value: " + (totalValue - 1) + ", total score: " + totalScore);
+    
+                            // Remove the VBox of cards
+                            area.getChildren().remove(cardVBox);
+                        }
                     }
                 }
     
@@ -531,7 +772,7 @@ public class GameController {
                         }
                     }
     
-                    if (birdCards.size() == cardVBox.getChildren().size()) {
+                    if ((cardVBox.getChildren().size() == 2 && birdCards.size() == 2) || (cardVBox.getChildren().size() == 3 && birdCards.size() == 3)) {
                         Map<Card, Integer> cardTotalValues = new HashMap<>();
                         boolean tie;
     
@@ -573,6 +814,12 @@ public class GameController {
                                     totalScore += areaTotalValueMap.getOrDefault(area, 0);
                                     playerScores.put(winningPlayerNumber, totalScore);
                                     System.out.println("Winning card for player " + winningPlayerNumber + ", total score: " + totalScore);
+    
+                                    // Clear the cubes in the VBox
+                                    clearCubesInVBox(area);
+    
+                                    // Remove the VBox of cards
+                                    area.getChildren().remove(cardVBox);
                                 }
                             }
                         } while (tie);
@@ -592,6 +839,32 @@ public class GameController {
             }
         }
         return -1; // Return -1 if the card is not found
+    }
+    
+    // Helper method to clear the cubes in the VBox
+    private void clearCubesInVBox(StackPane area) {
+        VBox cubeVBox = null;
+    
+        // Check if there is already a VBox for cubes in the StackPane
+        for (javafx.scene.Node node : area.getChildren()) {
+            if (node instanceof VBox && "cubes".equals(node.getId())) {
+                cubeVBox = (VBox) node;
+                break;
+            }
+        }
+    
+        // If no VBox for cubes exists in this area, create one
+        if (cubeVBox == null) {
+            cubeVBox = new VBox();
+            cubeVBox.setId("cubes");
+            cubeVBox.setPrefSize(150, 150); // Set fixed size for VBox to match StackPane
+            cubeVBox.setStyle("-fx-background-color: transparent;"); // Transparent background
+            cubeVBox.setAlignment(Pos.BOTTOM_CENTER); // Set alignment for the VBox to bottom center
+            area.getChildren().add(cubeVBox);
+        }
+    
+        // Clear the VBox to free up all the cubes
+        cubeVBox.getChildren().clear();
     }
 
     // private int calculatePlayerScore(VBox playerPile) {
@@ -638,10 +911,6 @@ public class GameController {
     //     return totalScore;
     // }
 
-    private int rollDice() {
-        return random.nextInt(6) + 1; // Roll a dice (1-6)
-    }
-    
     @FXML
     private void handleResolveFarmAction() {
         System.out.println("Resolving farm action...");
