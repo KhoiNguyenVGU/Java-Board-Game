@@ -80,9 +80,8 @@
             <VBox fx:id="cardPile" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
                 <!-- Shuffled cards will be added here -->
             </VBox>
-
-            <!-- Pile for player cards -->
-            <VBox fx:id="playerCardPile" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+            <!-- Pile for discarded cards -->
+            <VBox fx:id="discardPile" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
                 <!-- Player cards will be added here -->
             </VBox>
         </GridPane>
@@ -108,7 +107,7 @@
         <!-- Buttons -->
         <VBox alignment="CENTER" spacing="10">
             <Button fx:id="resolveFarmButton" text="Resolve Farm" onAction="#handleResolveFarmAction" />
-            <Button fx:id="rollButton" text="Roll Dice" onAction="#roll" />
+            <Button fx:id="reshuffleButton" text="Reshuffle Discard Pile" onAction="#handleReshuffleButtonAction" />
             <Button fx:id="placeCubesButton" text="Place Cubes" onAction="#handlePlaceCubesButtonAction" />
         </VBox>
     </HBox>
