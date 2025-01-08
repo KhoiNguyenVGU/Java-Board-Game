@@ -21,7 +21,6 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.event.ActionEvent;
 
 import java.util.Iterator;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,8 +77,6 @@ public class GameController {
     private boolean player2CardSelected = false;
     private boolean player3CardSelected = false;
 
-    private Map<Integer, Integer> playerScores = new HashMap<>();
-
     private Map<Integer, Card> playerCardMap = new HashMap<>();
 
     private int currentPlayerTurn = 1;
@@ -109,6 +106,9 @@ public class GameController {
 
         resolveFarmButton.setOnAction(_ -> {
             updatePlayerScores(); // Only update the scores here
+            if (cubeFlowPane.getChildren().isEmpty()) {
+                endGame();
+            }
         });
     }
 
@@ -311,17 +311,6 @@ public class GameController {
         player2CardSelected = false; // Reset the flag for the next turn
         player3CardSelected = false; // Reset the flag for the next turn
         currentPlayerTurn = 1; // Reset to the first player
-
-        if (cubeFlowPane.getChildren().isEmpty()) {
-            System.out.println("Cube flow pane is empty.");
-            // Determine the winner based on player scores
-            String winner = determineWinner();
-            System.out.println("Determined winner: " + winner);
-            declareWinner(winner);
-            endGame(); // End the game
-        } else {
-            System.out.println("Cube flow pane is not empty, continue the game.");
-        }
     }
 
     @FXML
@@ -423,6 +412,7 @@ public class GameController {
             // Print the cubes in the area
             printCubesInArea(area);
         }
+
     }
 
     private void setAreaColors() {
@@ -1321,9 +1311,13 @@ public class GameController {
 
         // Clear the playerCardMap after resolving the farm
         playerCardMap.clear();
+
+        // Check if all cubes have been placed
+        if (cubeFlowPane.getChildren().isEmpty()) {
+            endGame();
+        }
     }
 
-    
     // Helper method to find the StackPane containing the card
     private StackPane findCardPane(Card card) {
         // Search in player piles
@@ -1405,58 +1399,46 @@ public class GameController {
         }
     }
 
-    private String determineWinner() {
-        // Implement the logic to determine the winner based on player scores
-        int player1Score = getPlayerScore(1);
-        int player2Score = getPlayerScore(2);
-        int player3Score = getPlayerScore(3);
-    
-        if (player1Score > player2Score && player1Score > player3Score) {
+    private String getPlayerWithHighestScore() {
+        if (scorePlayer1 > scorePlayer2 && scorePlayer1 > scorePlayer3) {
             return "Player 1";
-        } else if (player2Score > player1Score && player2Score > player3Score) {
+        } else if (scorePlayer2 > scorePlayer1 && scorePlayer2 > scorePlayer3) {
             return "Player 2";
-        } else if (player3Score > player1Score && player3Score > player2Score) {
+        } else if (scorePlayer3 > scorePlayer1 && scorePlayer3 > scorePlayer2) {
             return "Player 3";
         } else {
             return "It's a tie!";
         }
     }
 
-    private int getPlayerScore(int playerNumber) {
-        // Implement this method to get the score of the specified player
-        switch (playerNumber) {
-            case 1:
-                return playerScores.getOrDefault(1, 0);
-            case 2:
-                return playerScores.getOrDefault(2, 0);
-            case 3:
-                return playerScores.getOrDefault(3, 0);
-            default:
-                return 0;
-        }
+    private void declareWinner() {
+        String winner = getPlayerWithHighestScore();
+        showWinnerScreen(winner);
     }
 
-    private void declareWinner(String winner) {
-        // Debug: Print the winner to the console
-        System.out.println("Winner: " + winner);
+    private void showWinnerScreen(String winner) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("winner.fxml"));
             Parent root = loader.load();
-    
             WinnerController winnerController = loader.getController();
             winnerController.setWinner(winner);
     
+            // Get the current stage and close it
+            Stage currentStage = (Stage) player1ScoreLabel.getScene().getWindow();
+            currentStage.close();
+        
             Stage stage = new Stage();
-            stage.setTitle("Game Over");
             stage.setScene(new Scene(root));
+            stage.setFullScreen(true); // Set the stage to full screen
             stage.show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
+    // Call this method at the end of the game when all cubes are added
     private void endGame() {
-        System.out.println("Game has ended.");
-        // Additional logic to end the game can be added here
+        updatePlayerScores();
+        declareWinner();
     }
 }

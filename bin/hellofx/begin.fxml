@@ -7,8 +7,8 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="673.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.BeginController">
    <children>
-      <Label layoutX="283.0" layoutY="61.0" text="HickHack Game" />
-      <TextField fx:id="tfName" layoutX="250.0" layoutY="141.0" promptText="Enter Number of Players" />
-      <Button fx:id="btnOkDetect" layoutX="283.0" layoutY="287.0" mnemonicParsing="false" onAction="#onOkButtonPressed" prefHeight="44.0" prefWidth="84.0" text="Ok" />
+      <Label layoutX="283.0" layoutY="61.0" text="Welcome to HickHack in Gackelwald" />
+      <TextField fx:id="tfName" layoutX="250.0" layoutY="141.0" promptText="Welcome to HickHack in Gackelwald!" />
+      <Button fx:id="btnOkDetect" layoutX="283.0" layoutY="287.0" mnemonicParsing="false" onAction="#onOkButtonPressed" prefHeight="44.0" prefWidth="84.0" text="Start!" />
    </children>
 </AnchorPane>

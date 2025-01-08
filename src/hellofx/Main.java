@@ -25,6 +25,8 @@ public class Main extends Application {
             
             primaryStage.setTitle("Start Game");
             primaryStage.setScene(new Scene(root));
+            // primaryStage.setFullScreen(true); // Set the stage to full screens
+
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,8 +40,9 @@ public class Main extends Application {
             GameController controller = loader.getController();
             controller.setGame(game);  // Pass the game instance to the controller
             
-            primaryStage.setTitle("Game Layout");
+            primaryStage.setTitle("Hick Hack");
             primaryStage.setScene(new Scene(root));
+            primaryStage.setFullScreen(true); // Set the stage to full screens
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
