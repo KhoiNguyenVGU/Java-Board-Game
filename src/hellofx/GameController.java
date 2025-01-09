@@ -18,7 +18,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.scene.paint.PhongMaterial;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
+import javafx.util.Duration;
 
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -37,7 +39,7 @@ public class GameController {
     private GridPane cardGrid;
 
     @FXML
-    private VBox cardPile;
+    private StackPane cardPile;
 
     @FXML
     private VBox cubeBox;
@@ -143,14 +145,20 @@ public class GameController {
         areaTotalValueMap.put(area6, 0);
     }
 
+    private StackPane createCardPane(Card card) {
+        StackPane cardPane = new StackPane();
+        cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
+        cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
+        Label label = new Label(card.toString());
+        cardPane.getChildren().add(label);
+        cardPane.setUserData(card); // Store the card as user data in the cardPane
+        return cardPane;
+    }
+
     private void createAndShuffleCards() {
         List<StackPane> cards = new ArrayList<>();
         for (Card card : game.getDeck()) {
-            StackPane cardPane = new StackPane();
-            cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
-            cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
-            Label label = new Label(card.toString());
-            cardPane.getChildren().add(label);
+            StackPane cardPane = createCardPane(card);
             cards.add(cardPane);
         }
 
@@ -159,7 +167,12 @@ public class GameController {
 
         // Clear the existing cards in the pile and add the shuffled cards
         cardPile.getChildren().clear();
-        cardPile.getChildren().addAll(cards);
+        for (StackPane cardPane : cards) {
+            cardPile.getChildren().add(cardPane);
+        }
+
+        // Debug: Print the number of cards added
+        System.out.println("Number of cards added to cardPile: " + cards.size());
     }
 
     private void createCubes() {
@@ -205,14 +218,17 @@ public class GameController {
                 handleCardSelection(card, playerPile, cardPane, playerNumber);
                 player1CardSelected = true;
                 currentPlayerTurn = 2; // Move to the next player
+                transitionToNextPlayer(player2CardPile, player1CardPile, player3CardPile);
             } else if (playerPile == player2CardPile && currentPlayerTurn == 2 && !player2CardSelected) {
                 handleCardSelection(card, playerPile, cardPane, playerNumber);
                 player2CardSelected = true;
                 currentPlayerTurn = 3; // Move to the next player
+                transitionToNextPlayer(player3CardPile, player1CardPile, player2CardPile);
             } else if (playerPile == player3CardPile && currentPlayerTurn == 3 && !player3CardSelected) {
                 handleCardSelection(card, playerPile, cardPane, playerNumber);
                 player3CardSelected = true;
                 currentPlayerTurn = 1; // Reset to the first player
+                transitionToNextPlayer(player1CardPile, player2CardPile, player3CardPile);
             }
     
             // Check if all players have selected their cards
@@ -223,6 +239,17 @@ public class GameController {
         });
     
         playerPile.getChildren().add(cardPane);
+    }
+
+
+    private void transitionToNextPlayer(VBox nextPlayerPile, VBox otherPlayerPile1, VBox otherPlayerPile2) {
+        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        pause.setOnFinished(event -> {
+            nextPlayerPile.setVisible(true);
+            otherPlayerPile1.setVisible(false);
+            otherPlayerPile2.setVisible(false);
+        });
+        pause.play();
     }
 
     private void handleCardSelection(Card card, VBox playerPile, StackPane cardPane, int playerNumber) {
@@ -286,12 +313,13 @@ public class GameController {
 
     private void addCardsToPlayerPile(int numberOfCards, VBox playerPile, int playerNumber) {
         for (int i = 0; i < numberOfCards; i++) {
-            if (!game.getDeck().isEmpty() && !cardPile.getChildren().isEmpty()) {
-                Card card = game.getDeck().remove(0); // Remove the card from the deck
-                addCardToPlayerPile(card, playerPile, playerNumber); // Add the card to the player pile
+            if (!cardPile.getChildren().isEmpty()) {
+                // Remove the top card from the card pile
+                StackPane topCardPane = (StackPane) cardPile.getChildren().remove(cardPile.getChildren().size() - 1);
+                Card topCard = (Card) topCardPane.getUserData();
 
-                // Remove the corresponding card from the card pile
-                cardPile.getChildren().remove(0);
+                // Add the top card to the player pile
+                addCardToPlayerPile(topCard, playerPile, playerNumber);
             }
         }
         updateAddCardsButtons();

@@ -77,9 +77,9 @@
             </GridPane>
 
             <!-- Pile for shuffled cards -->
-            <VBox fx:id="cardPile" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+            <StackPane fx:id="cardPile" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
                 <!-- Shuffled cards will be added here -->
-            </VBox>
+            </StackPane>
             <!-- Pile for discarded cards -->
             <VBox fx:id="discardPile" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
                 <!-- Player cards will be added here -->
