@@ -65,6 +65,7 @@ public class Card {
      */
     @Override
     public String toString() {
-        return type + " (" + value + ", " + color + ")";
+        String displayColor = color.equalsIgnoreCase("orange") ? "Black" : color;
+        return type + "(" + value + ", " + displayColor + ")";
     }
 }

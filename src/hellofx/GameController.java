@@ -7,22 +7,30 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 // import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.stage.Stage;
 import javafx.scene.paint.PhongMaterial;
-import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
-import javafx.util.Duration;
+
 
 import java.util.Iterator;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,6 +73,9 @@ public class GameController {
     private VBox player1CardPile, player2CardPile, player3CardPile;
 
     @FXML
+    private FlowPane player1CardFlowPane;
+
+    @FXML
     private Button addCardsButton1, addCardsButton2, addCardsButton3;
 
     @FXML
@@ -98,16 +109,19 @@ public class GameController {
     @FXML
     public void initialize() {
         createCubes();
-        setAreaColors();
+        initializeColorToAreaMap(); // Initialize the color to area map first
+        setAreaBackgroundImages(); // Call the method to set background images
         updateAddCardsButtons();
-        initializeColorToAreaMap();
         initializeColorToValueMap();
         initializeAreaTotalValueMap();
         updatePlayerScores();
         chooseCardsInOrder();
 
+        // Hide player 2 and player 3 piles initially
+        player2CardPile.setVisible(false);
+        player3CardPile.setVisible(false);
         resolveFarmButton.setOnAction(_ -> {
-            updatePlayerScores(); // Only update the scores here
+            handleResolveFarmAction();
             if (cubeFlowPane.getChildren().isEmpty()) {
                 endGame();
             }
@@ -118,6 +132,46 @@ public class GameController {
         createAndShuffleCards();
     }
 
+    private void setAreaBackgroundImages() {
+        // Define the path to the folder containing the images
+        String imageFolderPath = "src/hellofx/areas/";
+    
+        // Map each color to its corresponding image file name
+        Map<Color, String> colorToImageFileMap = new HashMap<>();
+        colorToImageFileMap.put(Color.YELLOW, "yellow.png");
+        colorToImageFileMap.put(Color.GREEN, "green.png");
+        colorToImageFileMap.put(Color.RED, "red.png");
+        colorToImageFileMap.put(Color.BLUE, "blue.png");
+        colorToImageFileMap.put(Color.PURPLE, "purple.png");
+        colorToImageFileMap.put(Color.BLACK, "black.png");
+    
+        // Iterate over the colorToAreaMap to set the background images
+        for (Map.Entry<Color, StackPane> entry : colorToAreaMap.entrySet()) {
+            Color color = entry.getKey();
+            StackPane area = entry.getValue();
+            String imageFileName = colorToImageFileMap.get(color);
+    
+            if (imageFileName != null) {
+                String imagePath = imageFolderPath + imageFileName;
+                try {
+                    Image image = new Image(new FileInputStream(imagePath));
+                    BackgroundImage backgroundImage = new BackgroundImage(
+                        image,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        new BackgroundSize(BackgroundSize.DEFAULT.getWidth(), BackgroundSize.DEFAULT.getHeight(), true, true, true, false)
+                    );
+                    area.setBackground(new Background(backgroundImage));
+                    System.out.println("Set background image for area: " + color);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    System.out.println("Image file not found: " + imagePath);
+                }
+            }
+        }
+    }
+
     private void initializeColorToAreaMap() {
         colorToAreaMap = new HashMap<>();
         colorToAreaMap.put(Color.YELLOW, area1);
@@ -125,7 +179,7 @@ public class GameController {
         colorToAreaMap.put(Color.RED, area3);
         colorToAreaMap.put(Color.BLUE, area4);
         colorToAreaMap.put(Color.PURPLE, area5);
-        colorToAreaMap.put(Color.ORANGE, area6); // Assuming area6 is for orange cards
+        colorToAreaMap.put(Color.BLACK, area6); // Assuming area6 is for orange cards
     }
 
     private void initializeColorToValueMap() {
@@ -143,34 +197,54 @@ public class GameController {
         areaTotalValueMap.put(area4, 0);
         areaTotalValueMap.put(area5, 0);
         areaTotalValueMap.put(area6, 0);
+        
     }
 
-    private StackPane createCardPane(Card card) {
-        StackPane cardPane = new StackPane();
-        cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
-        cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
-        Label label = new Label(card.toString());
-        cardPane.getChildren().add(label);
-        cardPane.setUserData(card); // Store the card as user data in the cardPane
-        return cardPane;
+    private ImageView createCardImageView(Card card) {
+        // Change card color from orange to black if necessary
+        String cardColor = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
+        
+        // Load the image for the card
+        String imagePath = "src/hellofx/cards/" + card.getType() + "_" + card.getValue() + "_" + cardColor + ".png";
+        try {
+            Image image = new Image(new FileInputStream(imagePath));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(100);
+            imageView.setFitHeight(150);
+            imageView.setPreserveRatio(false); // Do not preserve the aspect ratio of the image
+            imageView.setSmooth(true); // Enable smooth scaling
+            imageView.setUserData(card); // Store the card as user data in the imageView
+            return imageView;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            // Fallback to text if image is not found
+            Label label = new Label(card.toString());
+            label.setStyle("-fx-text-fill: white;"); // Set text color to white
+            StackPane fallbackPane = new StackPane(label);
+            fallbackPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
+            fallbackPane.setUserData(card); // Store the card as user data in the fallbackPane
+            return new ImageView(); // Return an empty ImageView as a fallback
+        }
     }
 
     private void createAndShuffleCards() {
-        List<StackPane> cards = new ArrayList<>();
+        List<ImageView> cards = new ArrayList<>();
         for (Card card : game.getDeck()) {
-            StackPane cardPane = createCardPane(card);
-            cards.add(cardPane);
+            ImageView cardImageView = createCardImageView(card);
+            cardImageView.setFitWidth(100); // Set the desired width
+            cardImageView.setFitHeight(150); // Set the desired height
+            cards.add(cardImageView);
         }
-
+    
         // Shuffle the cards
         Collections.shuffle(cards);
-
+    
         // Clear the existing cards in the pile and add the shuffled cards
         cardPile.getChildren().clear();
-        for (StackPane cardPane : cards) {
-            cardPile.getChildren().add(cardPane);
+        for (ImageView cardImageView : cards) {
+            cardPile.getChildren().add(cardImageView);
         }
-
+    
         // Debug: Print the number of cards added
         System.out.println("Number of cards added to cardPile: " + cards.size());
     }
@@ -194,7 +268,7 @@ public class GameController {
 
         // Create the border box
         Box borderBox = new Box(22, 22, 22); // Slightly larger for the border
-        borderBox.setMaterial(new PhongMaterial(Color.BLACK));
+        borderBox.setMaterial(new PhongMaterial(Color.WHITE));
 
         // Create the inner cube
         Box cube = new Box(20, 20, 20); // Smaller cube
@@ -205,27 +279,27 @@ public class GameController {
     }
 
     private void addCardToPlayerPile(Card card, VBox playerPile, int playerNumber) {
-        StackPane cardPane = new StackPane();
-        cardPane.setStyle("-fx-border-color: black; -fx-pref-width: 100; -fx-pref-height: 150;");
-        cardPane.setStyle("-fx-background-color: " + card.getColor() + ";");
-        Label label = new Label(card.toString());
-        cardPane.getChildren().add(label);
-        cardPane.setUserData(card); // Store the card as user data in the cardPane
+        ImageView cardImageView = createCardImageView(card);
+        cardImageView.setFitWidth(50);
+        cardImageView.setFitHeight(75);
+        cardImageView.setPreserveRatio(false); // Do not preserve the aspect ratio of the image
+        cardImageView.setSmooth(true); // Enable smooth scaling
+        cardImageView.setUserData(card); // Store the card as user data in the imageView
     
         // Add click event handler to the card
-        cardPane.setOnMouseClicked(_ -> {
+        cardImageView.setOnMouseClicked(_ -> {
             if (playerPile == player1CardPile && currentPlayerTurn == 1 && !player1CardSelected) {
-                handleCardSelection(card, playerPile, cardPane, playerNumber);
+                handleCardSelection(card, player1CardFlowPane, cardImageView, playerNumber);
                 player1CardSelected = true;
                 currentPlayerTurn = 2; // Move to the next player
                 transitionToNextPlayer(player2CardPile, player1CardPile, player3CardPile);
             } else if (playerPile == player2CardPile && currentPlayerTurn == 2 && !player2CardSelected) {
-                handleCardSelection(card, playerPile, cardPane, playerNumber);
+                handleCardSelection(card, playerPile, cardImageView, playerNumber);
                 player2CardSelected = true;
                 currentPlayerTurn = 3; // Move to the next player
                 transitionToNextPlayer(player3CardPile, player1CardPile, player2CardPile);
             } else if (playerPile == player3CardPile && currentPlayerTurn == 3 && !player3CardSelected) {
-                handleCardSelection(card, playerPile, cardPane, playerNumber);
+                handleCardSelection(card, playerPile, cardImageView, playerNumber);
                 player3CardSelected = true;
                 currentPlayerTurn = 1; // Reset to the first player
                 transitionToNextPlayer(player1CardPile, player2CardPile, player3CardPile);
@@ -238,37 +312,58 @@ public class GameController {
             }
         });
     
-        playerPile.getChildren().add(cardPane);
+        if (playerPile == player1CardPile) {
+            player1CardFlowPane.getChildren().add(cardImageView);
+        } else {
+            playerPile.getChildren().add(cardImageView);
+        }
     }
-
 
     private void transitionToNextPlayer(VBox nextPlayerPile, VBox otherPlayerPile1, VBox otherPlayerPile2) {
-        PauseTransition pause = new PauseTransition(Duration.seconds(1));
-        pause.setOnFinished(event -> {
-            nextPlayerPile.setVisible(true);
-            otherPlayerPile1.setVisible(false);
-            otherPlayerPile2.setVisible(false);
-        });
-        pause.play();
+        nextPlayerPile.setVisible(true);
+        otherPlayerPile1.setVisible(false);
+        otherPlayerPile2.setVisible(false);
     }
 
-    private void handleCardSelection(Card card, VBox playerPile, StackPane cardPane, int playerNumber) {
+    private void handleCardSelection(Card card, Pane playerPile, ImageView cardImageView, int playerNumber) {
         // Debug: Print the player number and the card they chose
         System.out.println("Player " + playerNumber + " selected card: " + card);
         // Perform desired action with the selected card
-        playerPile.getChildren().remove(cardPane);
+        playerPile.getChildren().remove(cardImageView);
         playerCardMap.put(playerNumber, card);
-        moveCardToCorrectArea(card, cardPane);
+        moveCardToCorrectArea(card, cardImageView);
         // Enable the add cards buttons
         addCardsButton1.setDisable(false);
         addCardsButton2.setDisable(false);
         addCardsButton3.setDisable(false);
-
+    
+        // Immediately switch to the next player
+        if (playerNumber == 1) {
+            currentPlayerTurn = 2;
+            transitionToNextPlayer(player2CardPile, player1CardPile, player3CardPile);
+        } else if (playerNumber == 2) {
+            currentPlayerTurn = 3;
+            transitionToNextPlayer(player3CardPile, player1CardPile, player2CardPile);
+        } else if (playerNumber == 3) {
+            currentPlayerTurn = 1;
+            transitionToNextPlayer(player1CardPile, player2CardPile, player3CardPile);
+        }
+    
+        // Check if all players have selected their cards
+        if (player1CardSelected && player2CardSelected && player3CardSelected) {
+            // Enable the resolve farm button
+            resolveFarmButton.setDisable(false);
+        }
     }
 
-    private void moveCardToCorrectArea(Card card, StackPane cardPane) {
-        Color cardColor = Color.valueOf(card.getColor().toUpperCase());
+    private void moveCardToCorrectArea(Card card, ImageView cardImageView) {
+        // Change card color from orange to black if necessary
+        String cardColorStr = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
+        Color cardColor = Color.valueOf(cardColorStr.toUpperCase());
         StackPane targetArea = colorToAreaMap.get(cardColor);
+    
+        // Debug: Print the card color and target area
+        System.out.println("Moving card to area: " + cardColor);
     
         if (targetArea != null) {
             VBox cardVBox = null;
@@ -292,22 +387,13 @@ public class GameController {
             }
     
             // Add the card to the VBox
-            cardVBox.getChildren().add(cardPane);
+            cardVBox.getChildren().add(cardImageView);
     
             // Debug: Print the number of cards in the VBox
             System.out.println("Number of cards in VBox for area " + targetArea.getId() + ": " + cardVBox.getChildren().size());
-    
-            // Print the color of the cubes in the VBox
-            for (javafx.scene.Node cube : cardVBox.getChildren()) {
-                if (cube instanceof StackPane) {
-                    StackPane cubeStack = (StackPane) cube;
-                    if (cubeStack.getChildren().size() > 1) {
-                        PhongMaterial material = (PhongMaterial) ((Box) cubeStack.getChildren().get(1)).getMaterial();
-                        Color cubeColor = (Color) material.getDiffuseColor();
-                        System.out.println("Cube color: " + cubeColor);
-                    }
-                }
-            }
+        } else {
+            // Debug: Print if the target area is not found
+            System.out.println("Target area not found for color: " + cardColor);
         }
     }
 
@@ -315,15 +401,15 @@ public class GameController {
         for (int i = 0; i < numberOfCards; i++) {
             if (!cardPile.getChildren().isEmpty()) {
                 // Remove the top card from the card pile
-                StackPane topCardPane = (StackPane) cardPile.getChildren().remove(cardPile.getChildren().size() - 1);
-                Card topCard = (Card) topCardPane.getUserData();
-
+                ImageView topCardImageView = (ImageView) cardPile.getChildren().remove(cardPile.getChildren().size() - 1);
+                Card topCard = (Card) topCardImageView.getUserData();
+    
                 // Add the top card to the player pile
                 addCardToPlayerPile(topCard, playerPile, playerNumber);
             }
         }
         updateAddCardsButtons();
-
+    
         // Disable the add cards buttons after adding new cards
         addCardsButton1.setDisable(true);
         addCardsButton2.setDisable(true);
@@ -443,14 +529,14 @@ public class GameController {
 
     }
 
-    private void setAreaColors() {
-        area1.setStyle("-fx-background-color: yellow;");
-        area2.setStyle("-fx-background-color: green;");
-        area3.setStyle("-fx-background-color: red;");
-        area4.setStyle("-fx-background-color: blue;");
-        area5.setStyle("-fx-background-color: purple;");
-        area6.setStyle("-fx-background-color: orange;");
-    }
+    // private void setAreaColors() {
+    //     area1.setStyle("-fx-background-color: yellow;");
+    //     area2.setStyle("-fx-background-color: green;");
+    //     area3.setStyle("-fx-background-color: red;");
+    //     area4.setStyle("-fx-background-color: blue;");
+    //     area5.setStyle("-fx-background-color: purple;");
+    //     area6.setStyle("-fx-background-color: black;");
+    // }
 
     private void updateAddCardsButtons() {
         addCardsButton1.setDisable(player1CardPile.getChildren().size() != 4);
@@ -495,7 +581,7 @@ public class GameController {
     }
 
     @FXML
-    private VBox discardPile;
+    private StackPane discardPile;
     private Map<Integer, Integer> calculatePlayerScores() {
         Map<Integer, Integer> playerScores = new HashMap<>();
         Random random = new Random();
@@ -517,11 +603,12 @@ public class GameController {
                 // Debug: Print the number of cards in the VBox
                 System.out.println("Number of cards in VBox for area " + area.getId() + ": " + cardVBox.getChildren().size());
                 // Add bird card to the discard pile
-
+                
+                
                 // If there is only one card in the VBox
                 if (cardVBox.getChildren().size() == 1) {
-                    StackPane cardPane = (StackPane) cardVBox.getChildren().get(0);
-                    Card card = (Card) cardPane.getUserData();
+                    ImageView cardImageView = (ImageView) cardVBox.getChildren().get(0);
+                    Card card = (Card) cardImageView.getUserData();
                     int playerNumber = getPlayerNumberByCard(card);
                 
                     // Check if the card belongs to the player and is a bird, fox, or fleeing bird
@@ -531,30 +618,20 @@ public class GameController {
                             totalScore += areaTotalValueMap.getOrDefault(area, 0);
                             playerScores.put(playerNumber, totalScore);
                             System.out.println("Single bird card in VBox for player " + playerNumber + ", total score: " + totalScore);
-                            // Add bird card to the discard pile
-                            StackPane birdCardPane = findCardPane(card);
-                            if (birdCardPane != null) {
-                                discardPile.getChildren().add(birdCardPane);
-                            }
+                            discardPile.getChildren().add(cardImageView);
                             // Clear the cubes in the VBox
                             clearCubesInVBox(area);
                         } else if (card.getType() == Card.Type.FOX) {
                             System.out.println("Single fox card in VBox for player " + playerNumber + ", no score added.");
                             // Add fox card to the discard pile
-                            StackPane foxCardPane = findCardPane(card);
-                            if (foxCardPane != null) {
-                                discardPile.getChildren().add(foxCardPane);
-                            }
+                            discardPile.getChildren().add(cardImageView);
                         } else if (card.getType() == Card.Type.FLEEING_BIRD) {
                             int totalScore = playerScores.getOrDefault(playerNumber, 0);
                             totalScore += areaTotalValueMap.getOrDefault(area, 0);
                             playerScores.put(playerNumber, totalScore);
                             System.out.println("Single fleeing bird card in VBox for player " + playerNumber + ", total score: " + totalScore);
                             // Add fleeing bird card to the discard pile
-                            StackPane fleeingBirdCardPane = findCardPane(card);
-                            if (fleeingBirdCardPane != null) {
-                                discardPile.getChildren().add(fleeingBirdCardPane);
-                            }
+                            discardPile.getChildren().add(cardImageView);
                             // Clear the cubes in the VBox
                             clearCubesInVBox(area);
                         }
@@ -572,8 +649,8 @@ public class GameController {
                     int foxCount = 0;
                     List<Card> birdCards = new ArrayList<>();
                     for (javafx.scene.Node node : cardVBox.getChildren()) {
-                        StackPane cardPane = (StackPane) node;
-                        Card card = (Card) cardPane.getUserData();
+                        ImageView cardImageView = (ImageView) node;
+                        Card card = (Card) cardImageView.getUserData();
                         if (card != null) {
                             if (card.getType() == Card.Type.BIRD) {
                                 birdCards.add(card);
@@ -635,9 +712,9 @@ public class GameController {
 
                                     // Add bird cards to the discard pile
                                     for (Card birdCard : birdCards) {
-                                        StackPane birdCardPane = findCardPane(birdCard);
-                                        if (birdCardPane != null) {
-                                            discardPile.getChildren().add(birdCardPane);
+                                        ImageView birdCardImageView = findCardImageView(birdCard);
+                                        if (birdCardImageView != null) {
+                                            discardPile.getChildren().add(birdCardImageView);
                                         }
                                     }
 
@@ -654,13 +731,10 @@ public class GameController {
                     else if (foxCount == 2) {
                         System.out.println("Two fox cards in VBox, no score added.");
                         for (javafx.scene.Node node : cardVBox.getChildren()) {
-                            StackPane cardPane = (StackPane) node;
-                            Card card = (Card) cardPane.getUserData();
+                            ImageView cardImageView = (ImageView) node;
+                            Card card = (Card) cardImageView.getUserData();
                             if (card != null && card.getType() == Card.Type.FOX) {
-                                StackPane foxCardPane = findCardPane(card);
-                                if (foxCardPane != null) {
-                                    discardPile.getChildren().add(foxCardPane);
-                                }
+                                discardPile.getChildren().add(cardImageView);
                             }
                         }
                         area.getChildren().remove(cardVBox);
@@ -708,13 +782,13 @@ public class GameController {
                             playerScores.put(birdPlayerNumber, birdScore);
                             System.out.println("Bird card in VBox for player " + birdPlayerNumber + ", score: " + (totalValue - 1) + ", total score: " + birdScore);
                             // Add bird card to the discard pile
-                            StackPane birdCardPane = findCardPane(birdCards.get(0));
-                            if (birdCardPane != null) {
-                                discardPile.getChildren().add(birdCardPane);
+                            ImageView birdCardImageView = findCardImageView(birdCards.get(0));
+                            if (birdCardImageView != null) {
+                                discardPile.getChildren().add(birdCardImageView);
                             }
-                            StackPane fleeingCardPane = findCardPane(fleeingBirdCard);
-                            if (fleeingCardPane != null) {
-                                discardPile.getChildren().add(fleeingCardPane);
+                            ImageView fleeingCardImageView = findCardImageView(fleeingBirdCard);
+                            if (fleeingCardImageView != null) {
+                                discardPile.getChildren().add(fleeingCardImageView);
                             }
                             // Remove the VBox of cards
                             area.getChildren().remove(cardVBox);
@@ -731,13 +805,13 @@ public class GameController {
                             System.out.println("Bird card in VBox for player " + birdPlayerNumber + ", score: " + (totalValue) + ", total score: " + birdScore);
                         
                             // Add bird card to the discard pile
-                            StackPane birdCardPane = findCardPane(birdCards.get(0));
-                            if (birdCardPane != null) {
-                                discardPile.getChildren().add(birdCardPane);
+                            ImageView birdCardImageView = findCardImageView(birdCards.get(0));
+                            if (birdCardImageView != null) {
+                                discardPile.getChildren().add(birdCardImageView);
                             }
-                            StackPane fleeingCardPane = findCardPane(fleeingBirdCard);
-                            if (fleeingCardPane != null) {
-                                discardPile.getChildren().add(fleeingCardPane);
+                            ImageView fleeingCardImageView = findCardImageView(fleeingBirdCard);
+                            if (fleeingCardImageView != null) {
+                                discardPile.getChildren().add(fleeingCardImageView);
                             }
                             // Remove the VBox of cards
                             area.getChildren().remove(cardVBox);
@@ -756,9 +830,9 @@ public class GameController {
                         System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird card value: " + birdCardValue + ", total score: " + totalScore);
 
                         // Add bird card to the discard pile
-                        StackPane foxCardPane = findCardPane(foxCard);
-                        if (foxCardPane != null) {
-                            discardPile.getChildren().add(foxCardPane);
+                        ImageView foxCardImageView = findCardImageView(foxCard);
+                        if (foxCardImageView != null) {
+                            discardPile.getChildren().add(foxCardImageView);
                         }
 
                         // Remove the VBox of cards
@@ -808,9 +882,9 @@ public class GameController {
                         }
                     
                         // Add fox card to the discard pile before removing the VBox
-                        StackPane foxCardPane = findCardPane(foxCard);
-                        if (foxCardPane != null) {
-                            discardPile.getChildren().add(foxCardPane);
+                        ImageView foxCardImageView = findCardImageView(foxCard);
+                        if (foxCardImageView != null) {
+                            discardPile.getChildren().add(foxCardImageView);
                         }
                     
                     
@@ -828,8 +902,8 @@ public class GameController {
                     List<Card> foxCards = new ArrayList<>();
                     Card fleeingBirdCard = null;
                     for (javafx.scene.Node node : cardVBox.getChildren()) {
-                        StackPane cardPane = (StackPane) node;
-                        Card card = (Card) cardPane.getUserData();
+                        ImageView cardImageView = (ImageView) node;
+                        Card card = (Card) cardImageView.getUserData();
                         if (card != null) {
                             if (card.getType() == Card.Type.BIRD) {
                                 birdCards.add(card);
@@ -888,12 +962,12 @@ public class GameController {
                 
                                     // Add bird cards to the discard pile
                                     for (Card birdCard : birdCards) {
-                                        StackPane birdCardPane = findCardPane(birdCard);
-                                        if (birdCardPane != null) {
-                                            discardPile.getChildren().add(birdCardPane);
+                                        ImageView birdCardImageView = findCardImageView(birdCard);
+                                        if (birdCardImageView != null) {
+                                            discardPile.getChildren().add(birdCardImageView);
                                         }
                                     }
-                
+
                                     // Remove the VBox of cards
                                     area.getChildren().remove(cardVBox);
                 
@@ -909,9 +983,9 @@ public class GameController {
                         
                         // Add fox cards to the discard pile
                         for (Card foxCard : foxCards) {
-                            StackPane foxCardPane = findCardPane(foxCard);
-                            if (foxCardPane != null) {
-                                discardPile.getChildren().add(foxCardPane);
+                            ImageView foxCardImageView = findCardImageView(foxCard);
+                            if (foxCardImageView != null) {
+                                discardPile.getChildren().add(foxCardImageView);
                             }
                         }
                         area.getChildren().remove(cardVBox);
@@ -981,9 +1055,9 @@ public class GameController {
                     
                             // Add fox cards to the discard pile
                             for (Card foxCard : foxCards) {
-                                StackPane foxCardPane = findCardPane(foxCard);
-                                if (foxCardPane != null) {
-                                    discardPile.getChildren().add(foxCardPane);
+                                ImageView foxCardImageView = findCardImageView(foxCard);
+                                if (foxCardImageView != null) {
+                                    discardPile.getChildren().add(foxCardImageView);
                                 }
                             }
                     
@@ -1004,9 +1078,9 @@ public class GameController {
                         System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird card values sum: " + birdCardValueSum + ", total score: " + totalScore);
                         
                         // Add fox card to the discard pile before removing the VBox
-                        StackPane foxCardPane = findCardPane(foxCards.get(0));
-                        if (foxCardPane != null) {
-                            discardPile.getChildren().add(foxCardPane);
+                        ImageView foxCardImageView = findCardImageView(foxCards.get(0));
+                        if (foxCardImageView != null) {
+                            discardPile.getChildren().add(foxCardImageView);
                         }
                     
                     
@@ -1059,9 +1133,9 @@ public class GameController {
                         System.out.println("Fox card in VBox for player " + foxPlayerNumber + ", score added by bird and fleeing bird card values: " + (birdCardValue + fleeingBirdCardValue) + ", total score: " + totalScore);
                     
                         // Add fox card to the discard pile before removing the VBox
-                        StackPane foxCardPane = findCardPane(foxCards.get(0));
-                        if (foxCardPane != null) {
-                            discardPile.getChildren().add(foxCardPane);
+                        ImageView foxCardImageView = findCardImageView(foxCards.get(0));
+                        if (foxCardImageView != null) {
+                            discardPile.getChildren().add(foxCardImageView);
                         }
                     
                     
@@ -1134,16 +1208,16 @@ public class GameController {
                         
                                 // Add bird cards to the discard pile
                                 for (Card birdCard : birdCards) {
-                                    StackPane birdCardPane = findCardPane(birdCard);
-                                    if (birdCardPane != null) {
-                                        discardPile.getChildren().add(birdCardPane);
+                                    ImageView birdCardImageView = findCardImageView(birdCard);
+                                    if (birdCardImageView != null) {
+                                        discardPile.getChildren().add(birdCardImageView);
                                     }
                                 }
                         
                                 // Add fleeing bird card to the discard pile
-                                StackPane fleeingBirdCardPane = findCardPane(fleeingBirdCard);
-                                if (fleeingBirdCardPane != null) {
-                                    discardPile.getChildren().add(fleeingBirdCardPane);
+                                ImageView fleeingBirdCardImageView = findCardImageView(fleeingBirdCard);
+                                if (fleeingBirdCardImageView != null) {
+                                    discardPile.getChildren().add(fleeingBirdCardImageView);
                                 }
                         
                                 // Remove the VBox of cards
@@ -1185,16 +1259,16 @@ public class GameController {
                         
                                 // Add bird cards to the discard pile
                                 for (Card birdCard : birdCards) {
-                                    StackPane birdCardPane = findCardPane(birdCard);
-                                    if (birdCardPane != null) {
-                                        discardPile.getChildren().add(birdCardPane);
+                                    ImageView birdCardImageView = findCardImageView(birdCard);
+                                    if (birdCardImageView != null) {
+                                        discardPile.getChildren().add(birdCardImageView);
                                     }
                                 }
                         
                                 // Add fleeing bird card to the discard pile
-                                StackPane fleeingBirdCardPane = findCardPane(fleeingBirdCard);
-                                if (fleeingBirdCardPane != null) {
-                                    discardPile.getChildren().add(fleeingBirdCardPane);
+                                ImageView fleeingBirdCardImageView = findCardImageView(fleeingBirdCard);
+                                if (fleeingBirdCardImageView != null) {
+                                    discardPile.getChildren().add(fleeingBirdCardImageView);
                                 }
                         
                                 // Remove the VBox of cards
@@ -1315,6 +1389,18 @@ public class GameController {
         }
     }
 
+    private void addCardToDiscardPile(Card card) {
+        ImageView cardImageView = createCardImageView(card);
+        cardImageView.setFitWidth(100); // Set the desired width
+        cardImageView.setFitHeight(150); // Set the desired height
+    
+        // Clear the existing cards in the discard pile
+        discardPile.getChildren().clear();
+    
+        // Add the new card to the discard pile
+        discardPile.getChildren().add(cardImageView);
+    }
+
     @FXML
     private void handleResolveFarmAction() {
         System.out.println("Resolving farm action...");
@@ -1326,12 +1412,12 @@ public class GameController {
         for (Map.Entry<Integer, Card> entry : playerCardMap.entrySet()) {
             Card card = entry.getValue();
             if (card != null) {
-                StackPane cardPane = findCardPane(card);
-                if (cardPane != null) {
-                    // Remove the cardPane from its current parent
-                    ((VBox) cardPane.getParent()).getChildren().remove(cardPane);
-                    // Add the cardPane to the discard pile
-                    discardPile.getChildren().add(cardPane);
+                ImageView cardImageView = findCardImageView(card);
+                if (cardImageView != null) {
+                    // Remove the cardImageView from its current parent
+                    ((Pane) cardImageView.getParent()).getChildren().remove(cardImageView);
+                    // Add the card to the discard pile
+                    addCardToDiscardPile(card);
                     System.out.println("Added card to discard pile: " + card);
                 }
             }
@@ -1346,15 +1432,14 @@ public class GameController {
         }
     }
 
-    // Helper method to find the StackPane containing the card
-    private StackPane findCardPane(Card card) {
+    private ImageView findCardImageView(Card card) {
         // Search in player piles
         for (VBox playerPile : new VBox[]{player1CardPile, player2CardPile, player3CardPile}) {
             for (javafx.scene.Node node : playerPile.getChildren()) {
-                if (node instanceof StackPane) {
-                    StackPane cardPane = (StackPane) node;
-                    if (card.equals(cardPane.getUserData())) {
-                        return cardPane;
+                if (node instanceof ImageView) {
+                    ImageView cardImageView = (ImageView) node;
+                    if (card.equals(cardImageView.getUserData())) {
+                        return cardImageView;
                     }
                 }
             }
@@ -1367,10 +1452,10 @@ public class GameController {
                 if (node instanceof VBox && "cards".equals(node.getId())) {
                     VBox cardVBox = (VBox) node;
                     for (javafx.scene.Node cardNode : cardVBox.getChildren()) {
-                        if (cardNode instanceof StackPane) {
-                            StackPane cardPane = (StackPane) cardNode;
-                            if (card.equals(cardPane.getUserData())) {
-                                return cardPane;
+                        if (cardNode instanceof ImageView) {
+                            ImageView cardImageView = (ImageView) cardNode;
+                            if (card.equals(cardImageView.getUserData())) {
+                                return cardImageView;
                             }
                         }
                     }
@@ -1380,6 +1465,42 @@ public class GameController {
     
         return null;
     }
+    
+
+    // Helper method to find the StackPane containing the card
+    // private StackPane findCardPane(Card card) {
+    //     // Search in player piles
+    //     for (VBox playerPile : new VBox[]{player1CardPile, player2CardPile, player3CardPile}) {
+    //         for (javafx.scene.Node node : playerPile.getChildren()) {
+    //             if (node instanceof StackPane) {
+    //                 StackPane cardPane = (StackPane) node;
+    //                 if (card.equals(cardPane.getUserData())) {
+    //                     return cardPane;
+    //                 }
+    //             }
+    //         }
+    //     }
+    
+    //     // Search in areas
+    //     StackPane[] areas = {area1, area2, area3, area4, area5, area6};
+    //     for (StackPane area : areas) {
+    //         for (javafx.scene.Node node : area.getChildren()) {
+    //             if (node instanceof VBox && "cards".equals(node.getId())) {
+    //                 VBox cardVBox = (VBox) node;
+    //                 for (javafx.scene.Node cardNode : cardVBox.getChildren()) {
+    //                     if (cardNode instanceof StackPane) {
+    //                         StackPane cardPane = (StackPane) cardNode;
+    //                         if (card.equals(cardPane.getUserData())) {
+    //                             return cardPane;
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    
+    //     return null;
+    // }
 
     // private void addCardsToDiscardPile(VBox cardVBox, List<Card> cardsToDiscard) {
     //     for (Card card : cardsToDiscard) {
@@ -1412,20 +1533,22 @@ public class GameController {
     private void handleReshuffleButtonAction() {
         if (cardPile.getChildren().isEmpty()) {
             // Shuffle the discard pile and add the cards back to the card pile
-            List<StackPane> cards = new ArrayList<>();
+            List<ImageView> cards = new ArrayList<>();
             for (javafx.scene.Node node : discardPile.getChildren()) {
-                if (node instanceof StackPane) {
-                    cards.add((StackPane) node);
+                if (node instanceof ImageView) {
+                    cards.add((ImageView) node);
                 }
             }
             Collections.shuffle(cards);
             cardPile.getChildren().addAll(cards);
             discardPile.getChildren().clear();
-            System.out.println("Discard pile shuffled and added back to the card pile.");
+            System.out.println("Discard pile shuffled and added back to the card pile. Number of cards added: " + cards.size());
         } else {
             System.out.println("Card pile is not empty.");
         }
     }
+
+    
 
     private String getPlayerWithHighestScore() {
         if (scorePlayer1 > scorePlayer2 && scorePlayer1 > scorePlayer3) {

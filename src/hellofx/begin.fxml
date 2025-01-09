@@ -1,14 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="673.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.BeginController">
    <children>
-      <Label layoutX="283.0" layoutY="61.0" text="Welcome to HickHack in Gackelwald" />
-      <TextField fx:id="tfName" layoutX="250.0" layoutY="141.0" promptText="Welcome to HickHack in Gackelwald!" />
-      <Button fx:id="btnOkDetect" layoutX="283.0" layoutY="287.0" mnemonicParsing="false" onAction="#onOkButtonPressed" prefHeight="44.0" prefWidth="84.0" text="Start!" />
+      <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <ImageView fx:id="backgroundImageView" fitHeight="536.0" fitWidth="673.0" pickOnBounds="true" preserveRatio="false" />
+            <VBox alignment="CENTER" spacing="20">
+               <Label text="Welcome To HickHack in Gackelwald" style="-fx-font-size: 30px; -fx-text-fill: white; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0.5, 0, 1);" />
+               <Button fx:id="btnOkDetect" mnemonicParsing="false" onAction="#onOkButtonPressed" text="Start!" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-border-color: white; -fx-border-width: 2px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0.5, 0, 1);" />
+            </VBox>
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

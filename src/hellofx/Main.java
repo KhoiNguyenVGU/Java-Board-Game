@@ -23,9 +23,11 @@ public class Main extends Application {
             BeginController controller = loader.getController();
             controller.setMainApp(this); // Pass reference to Main for transition
             
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm()); // Apply CSS
             primaryStage.setTitle("Start Game");
-            primaryStage.setScene(new Scene(root));
-            // primaryStage.setFullScreen(true); // Set the stage to full screens
+            primaryStage.setScene(scene);
+            // primaryStage.setFullScreen(true); // Set the stage to full screen
 
             primaryStage.show();
         } catch (Exception e) {
@@ -40,9 +42,11 @@ public class Main extends Application {
             GameController controller = loader.getController();
             controller.setGame(game);  // Pass the game instance to the controller
             
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm()); // Apply CSS
             primaryStage.setTitle("Hick Hack");
-            primaryStage.setScene(new Scene(root));
-            primaryStage.setFullScreen(true); // Set the stage to full screens
+            primaryStage.setScene(scene);
+            primaryStage.setFullScreen(true); // Set the stage to full screen
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();

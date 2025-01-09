@@ -14,7 +14,7 @@
         <!-- Top player pile -->
         <VBox fx:id="player1CardPile" alignment="CENTER" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;" GridPane.columnIndex="1" GridPane.rowIndex="0">
             <Label text="Player 1" />
-            <!-- Player 1 cards will be added here -->
+            <FlowPane fx:id="player1CardFlowPane" orientation="HORIZONTAL" hgap="5" alignment="CENTER" />
             <Button fx:id="addCardsButton1" text="Add Cards to Player 1" onAction="#handleAddCardsToPlayer1Action" />
         </VBox>
 
@@ -76,13 +76,18 @@
                 <!-- Cards will be added here dynamically -->
             </GridPane>
 
-            <!-- Pile for shuffled cards -->
-            <StackPane fx:id="cardPile" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
-                <!-- Shuffled cards will be added here -->
-            </StackPane>
-            <!-- Pile for discarded cards -->
-            <VBox fx:id="discardPile" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.rowSpan="10" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
-                <!-- Player cards will be added here -->
+            <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.rowSpan="10">
+                <Label text="Card Deck" />
+                <StackPane fx:id="cardPile" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+                    <!-- Shuffled cards will be added here -->
+                </StackPane>
+            </VBox>
+
+            <VBox alignment="CENTER" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.rowSpan="10">
+                <Label text="Discard Deck" />
+                <StackPane fx:id="discardPile" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2;">
+                    <!-- Player cards will be added here -->
+                </StackPane>
             </VBox>
         </GridPane>
     </GridPane>
