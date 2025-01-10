@@ -1,10 +1,13 @@
 package hellofx;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -17,24 +20,48 @@ public class WinnerController implements Initializable {
     private Label firstPlaceLabel;
 
     @FXML
+    private Label firstPlaceName;
+
+    @FXML
     private Label secondPlaceLabel;
+
+    @FXML
+    private Label secondPlaceName;
 
     @FXML
     private Label thirdPlaceLabel;
 
     @FXML
-    private ImageView congratulationsImageView;
+    private Label thirdPlaceName;
+
+    @FXML
+    private VBox firstPlaceVBox;
+
+    @FXML
+    private VBox secondPlaceVBox;
+
+    @FXML
+    private VBox thirdPlaceVBox;
+
+    @FXML
+    private AnchorPane rootPane;
+
+    private WinnerAnimation winnerAnimation = new WinnerAnimation();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load the GIF and set it to the ImageView
-        String gifPath = "/hellofx/resources/congratulations.gif";
-        URL gifUrl = getClass().getResource(gifPath);
-        if (gifUrl != null) {
-            Image gifImage = new Image(gifUrl.toExternalForm());
-            congratulationsImageView.setImage(gifImage);
+        // Apply the CSS file programmatically
+        String stylesheetPath = getClass().getResource("/hellofx/styles.css").toExternalForm();
+        // Apply the stylesheet to the scene when it becomes available
+        Scene scene = firstPlaceName.getScene();
+        if (scene != null) {
+            scene.getStylesheets().add(stylesheetPath);
         } else {
-            System.err.println("GIF not found: " + gifPath);
+            firstPlaceName.sceneProperty().addListener((observable, oldScene, newScene) -> {
+                if (newScene != null) {
+                    newScene.getStylesheets().add(stylesheetPath);
+                }
+            });
         }
     }
 
@@ -42,30 +69,47 @@ public class WinnerController implements Initializable {
         // Sort players by points in descending order
         players.sort((p1, p2) -> Integer.compare(p2.getPoints(), p1.getPoints()));
 
-        // Set the text for the labels
         if (players.size() > 0) {
-            firstPlaceLabel.setText("1st Place: " + players.get(0).getName() + " - " + players.get(0).getPoints() + " points");
+            firstPlaceName.setText(players.get(0).getName() + " - " + players.get(0).getPoints() + " points");
+            firstPlaceVBox.setPrefHeight(400); // Set height for 1st place
+            winnerAnimation.addGlowEffect(firstPlaceName);
+            winnerAnimation.playFireworksAnimation(rootPane);
+            winnerAnimation.playConfettiAnimation(rootPane);
         }
+
         if (players.size() > 1) {
-            secondPlaceLabel.setText("2nd Place: " + players.get(1).getName() + " - " + players.get(1).getPoints() + " points");
+            secondPlaceName.setText(players.get(1).getName() + " - " + players.get(1).getPoints() + " points");
+            secondPlaceVBox.setPrefHeight(300); // Set height for 2nd place
         }
+
         if (players.size() > 2) {
-            thirdPlaceLabel.setText("3rd Place: " + players.get(2).getName() + " - " + players.get(2).getPoints() + " points");
+            thirdPlaceName.setText(players.get(2).getName() + " - " + players.get(2).getPoints() + " points");
+            thirdPlaceVBox.setPrefHeight(200); // Set height for 3rd place
         }
     }
 
     @FXML
     private void handlePlayAgainAction() {
-        // Logic to restart the game
-        Stage stage = (Stage) firstPlaceLabel.getScene().getWindow();
-        stage.close();
-        // Open the main game stage again (implement this logic as needed)
+        try {
+            // Load the begin.fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("begin.fxml"));
+            Parent root = loader.load();
+
+            // Get the current stage
+            Stage stage = (Stage) firstPlaceName.getScene().getWindow();
+
+            // Set the new scene
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleExitAction() {
         // Exit the application
-        Stage stage = (Stage) firstPlaceLabel.getScene().getWindow();
+        Stage stage = (Stage) firstPlaceName.getScene().getWindow();
         stage.close();
     }
 }

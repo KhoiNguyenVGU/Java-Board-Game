@@ -12,6 +12,8 @@ public class Player {
     private List<Card> hand = new ArrayList<>();
     private List<Object> scorePile = new ArrayList<>(); // Includes Corn and Birds
 
+    private int points;
+
     /**
      * Constructs a new Player with the specified name.
      *
@@ -19,6 +21,7 @@ public class Player {
      */
     public Player(String name) {
         this.name = name;
+        this.points = 0; // Initialize points to 0
     }
 
     /**
@@ -103,6 +106,14 @@ public class Player {
             }
         }
         System.out.print("\n");
+    }
+
+    public int getPoints() {
+        return points;
+    }
+    
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     /**

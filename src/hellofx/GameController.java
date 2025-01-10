@@ -32,11 +32,13 @@ import java.util.Iterator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class GameController {
 
@@ -94,9 +96,13 @@ public class GameController {
 
     private int currentPlayerTurn = 1;
 
-    int scorePlayer1 = 0;
-    int scorePlayer2 = 0;
-    int scorePlayer3 = 0;
+    private Player player1 = new Player("Player 1");
+    private Player player2 = new Player("Player 2");
+    private Player player3 = new Player("Player 3");
+
+    private int scorePlayer1 = 0;
+    private int scorePlayer2 = 0;
+    private int scorePlayer3 = 0;
 
     public void setGame(Game game) {
         this.game = game;
@@ -554,6 +560,11 @@ public class GameController {
         scorePlayer1 += player1Score;
         scorePlayer2 += player2Score;
         scorePlayer3 += player3Score;
+
+        // Update the Player objects with the new scores
+        player1.setPoints(scorePlayer1);
+        player2.setPoints(scorePlayer2);
+        player3.setPoints(scorePlayer3);
 
         // Debug: Print the calculated scores
         System.out.println("Player 1 Score: " + scorePlayer1);
@@ -1550,38 +1561,48 @@ public class GameController {
 
     
 
-    private String getPlayerWithHighestScore() {
-        if (scorePlayer1 > scorePlayer2 && scorePlayer1 > scorePlayer3) {
-            return "Player 1";
-        } else if (scorePlayer2 > scorePlayer1 && scorePlayer2 > scorePlayer3) {
-            return "Player 2";
-        } else if (scorePlayer3 > scorePlayer1 && scorePlayer3 > scorePlayer2) {
-            return "Player 3";
-        } else {
-            return "It's a tie!";
-        }
-    }
+    // private String getPlayerWithHighestScore() {
+    //     if (scorePlayer1 > scorePlayer2 && scorePlayer1 > scorePlayer3) {
+    //         return "Player 1";
+    //     } else if (scorePlayer2 > scorePlayer1 && scorePlayer2 > scorePlayer3) {
+    //         return "Player 2";
+    //     } else if (scorePlayer3 > scorePlayer1 && scorePlayer3 > scorePlayer2) {
+    //         return "Player 3";
+    //     } else {
+    //         return "It's a tie!";
+    //     }
+    // }
+
+    private Stage winnerStage;
+    private WinnerController winnerController;
 
     private void declareWinner() {
-        String winner = getPlayerWithHighestScore();
-        showWinnerScreen(winner);
+        List<Player> players = getPlayersSortedByScore();
+        showWinnerScreen(players);
     }
 
-    private void showWinnerScreen(String winner) {
+    private void showWinnerScreen(List<Player> players) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("winner.fxml"));
-            Parent root = loader.load();
-            WinnerController winnerController = loader.getController();
-            winnerController.setWinner(winner);
-    
+            if (winnerStage == null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("winner.fxml"));
+                Parent root = loader.load();
+                winnerController = loader.getController();
+                winnerController.setWinners(players);
+
+                // Create a new stage for the winner screen
+                winnerStage = new Stage();
+                winnerStage.setScene(new Scene(root));
+                winnerStage.setOnCloseRequest(_ -> winnerStage = null);
+                winnerStage.show();
+            } else {
+                // If the winner stage is already open, bring it to the front and update the winners
+                winnerStage.toFront();
+                winnerController.setWinners(players);
+            }
+
             // Get the current stage and close it
             Stage currentStage = (Stage) player1ScoreLabel.getScene().getWindow();
             currentStage.close();
-        
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setFullScreen(true); // Set the stage to full screen
-            stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1591,5 +1612,20 @@ public class GameController {
     private void endGame() {
         updatePlayerScores();
         declareWinner();
+    }
+
+    private List<Player> getPlayersSortedByScore() {
+        // Assuming you have a method to get all players
+        List<Player> players = getAllPlayers();
+        // Sort players by points in descending order
+        return players.stream()
+                .sorted((p1, p2) -> Integer.compare(p2.getPoints(), p1.getPoints()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Player> getAllPlayers() {
+        // Return the list of all players
+        return Arrays.asList(player1, player2, player3);
+        // Add more players to the list as needed
     }
 }
