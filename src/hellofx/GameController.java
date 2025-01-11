@@ -2,6 +2,7 @@ package hellofx;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -23,9 +24,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
+
 import javafx.stage.Stage;
 import javafx.scene.paint.PhongMaterial;
+import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
+import javafx.util.Duration;
 
 
 import java.util.Iterator;
@@ -337,7 +341,18 @@ public class GameController {
         // Perform desired action with the selected card
         playerPile.getChildren().remove(cardImageView);
         playerCardMap.put(playerNumber, card);
-        moveCardToCorrectArea(card, cardImageView);
+    
+        // Determine the target area based on the card's color
+        String cardColorStr = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
+        StackPane targetArea = getTargetAreaByColor((GridPane) playerPile.getScene().lookup("#mainGrid"), cardColorStr);
+    
+        // Transition the card to the correct area
+        if (targetArea != null) {
+            transitionCard(cardImageView, playerPile, cardColorStr, playerNumber);
+        } else {
+            System.out.println("Target area not found for color: " + cardColorStr);
+        }
+    
         // Enable the add cards buttons
         addCardsButton1.setDisable(false);
         addCardsButton2.setDisable(false);
@@ -361,28 +376,81 @@ public class GameController {
             resolveFarmButton.setDisable(false);
         }
     }
-
-    private void moveCardToCorrectArea(Card card, ImageView cardImageView) {
-        // Change card color from orange to black if necessary
-        String cardColorStr = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
-        Color cardColor = Color.valueOf(cardColorStr.toUpperCase());
-        StackPane targetArea = colorToAreaMap.get(cardColor);
     
-        // Debug: Print the card color and target area
-        System.out.println("Moving card to area: " + cardColor);
+    private void transitionCard(ImageView cardImageView, Pane startPane, String cardColor, int playerNumber) {
+        // Create a clone of the cardImageView for the transition
+        ImageView cardClone = new ImageView(cardImageView.getImage());
+        cardClone.setFitWidth(50); // Set the width to 50
+        cardClone.setFitHeight(75); // Set the height to 75
     
-        if (targetArea != null) {
+        // Set up transition
+        GridPane mainGrid = (GridPane) startPane.getScene().lookup("#mainGrid");
+    
+        // Determine the target area based on the card color
+        StackPane targetArea = getTargetAreaByColor(mainGrid, cardColor);
+        Bounds targetBounds = targetArea.localToScene(targetArea.getBoundsInLocal());
+    
+        // Calculate the center positions for the transition
+        double centerX = targetBounds.getMinX() + targetBounds.getWidth() / 2 - cardClone.getFitWidth() / 2;
+        double centerY = targetBounds.getMinY() + targetBounds.getHeight() / 2 - cardClone.getFitHeight() / 2;
+    
+        // Get the bounds of the player pile
+        Bounds playerPileBounds;
+        if (playerNumber == 1) {
+            playerPileBounds = startPane.getScene().lookup("#player1CardPile").localToScene(startPane.getBoundsInLocal());
+        } else if (playerNumber == 2) {
+            playerPileBounds = startPane.getScene().lookup("#player2CardPile").localToScene(startPane.getBoundsInLocal());
+        } else {
+            playerPileBounds = startPane.getScene().lookup("#player3CardPile").localToScene(startPane.getBoundsInLocal());
+        }
+    
+        // Debug: Print coordinates of player piles
+        System.out.println("Player 1 pile position: " + startPane.getScene().lookup("#player1CardPile").localToScene(startPane.getBoundsInLocal()).getMinX() + ", " + startPane.getScene().lookup("#player1CardPile").localToScene(startPane.getBoundsInLocal()).getMinY());
+        System.out.println("Player 2 pile position: " + startPane.getScene().lookup("#player2CardPile").localToScene(startPane.getBoundsInLocal()).getMinX() + ", " + startPane.getScene().lookup("#player2CardPile").localToScene(startPane.getBoundsInLocal()).getMinY());
+        System.out.println("Player 3 pile position: " + startPane.getScene().lookup("#player3CardPile").localToScene(startPane.getBoundsInLocal()).getMinX() + ", " + startPane.getScene().lookup("#player3CardPile").localToScene(startPane.getBoundsInLocal()).getMinY());
+    
+        // Debug: Print initial position of the clone before setting it
+        System.out.println("Initial card clone position before setting: " + cardClone.getLayoutX() + ", " + cardClone.getLayoutY());
+    
+        // Set initial position of the clone based on player pile position
+        cardClone.setLayoutX(playerPileBounds.getMinX());
+        cardClone.setLayoutY(playerPileBounds.getMinY());
+    
+        // Debug: Print initial position of the clone after setting it
+        System.out.println("Initial card clone position after setting: " + cardClone.getLayoutX() + ", " + cardClone.getLayoutY());
+    
+        // Debug: Print initial and target positions
+        System.out.println("Starting card position: " + cardClone.getLayoutX() + ", " + cardClone.getLayoutY());
+        System.out.println("Target area position: " + centerX + ", " + centerY);
+    
+        // Debug: Print main grid and target area dimensions
+        System.out.println("Main grid dimensions: " + mainGrid.getWidth() + "x" + mainGrid.getHeight());
+        System.out.println("Target area dimensions: " + targetBounds.getWidth() + "x" + targetBounds.getHeight());
+    
+        // Temporarily add the clone to the main grid for the transition
+        mainGrid.getChildren().add(cardClone);
+    
+        // Debug: Print position of the clone after adding to the main grid
+        System.out.println("Card clone position after adding to main grid: " + cardClone.getLayoutX() + ", " + cardClone.getLayoutY());
+    
+        // Create a TranslateTransition for the card movement
+        TranslateTransition transition = new TranslateTransition(Duration.seconds(1), cardClone);
+        transition.setToX(centerX - cardClone.getLayoutX());
+        transition.setToY(centerY - cardClone.getLayoutY());
+        transition.setInterpolator(javafx.animation.Interpolator.EASE_BOTH);
+    
+        // When the animation finishes, move the original card to the correct VBox
+        transition.setOnFinished(event -> {
+            // Remove clone from main grid
+            mainGrid.getChildren().remove(cardClone);
+            // Add original card to the target area
             VBox cardVBox = null;
-    
-            // Check if there is already a VBox for cards in the StackPane
             for (javafx.scene.Node node : targetArea.getChildren()) {
                 if (node instanceof VBox && "cards".equals(node.getId())) {
                     cardVBox = (VBox) node;
                     break;
                 }
             }
-    
-            // If no VBox for cards exists in this area, create one
             if (cardVBox == null) {
                 cardVBox = new VBox();
                 cardVBox.setId("cards");
@@ -391,17 +459,37 @@ public class GameController {
                 cardVBox.setAlignment(Pos.TOP_CENTER); // Set alignment for the VBox to center cubes
                 targetArea.getChildren().add(cardVBox);
             }
-    
-            // Add the card to the VBox
             cardVBox.getChildren().add(cardImageView);
-    
             // Debug: Print the number of cards in the VBox
             System.out.println("Number of cards in VBox for area " + targetArea.getId() + ": " + cardVBox.getChildren().size());
-        } else {
-            // Debug: Print if the target area is not found
-            System.out.println("Target area not found for color: " + cardColor);
+        });
+    
+        // Play the transition
+        transition.play();
+    }
+
+    private StackPane getTargetAreaByColor(GridPane mainGrid, String cardColor) {
+        switch (cardColor.toLowerCase()) {
+            case "yellow":
+                return (StackPane) mainGrid.lookup("#area1");
+            case "green":
+                return (StackPane) mainGrid.lookup("#area2");
+            case "red":
+                return (StackPane) mainGrid.lookup("#area3");
+            case "blue":
+                return (StackPane) mainGrid.lookup("#area4");
+            case "purple":
+                return (StackPane) mainGrid.lookup("#area5");
+            case "orange":
+                return (StackPane) mainGrid.lookup("#area6");
+            case "black":
+                // Assuming black maps to a specific area, update accordingly
+                return (StackPane) mainGrid.lookup("#area6"); // Example: mapping black to area6
+            default:
+                throw new IllegalArgumentException("Unknown card color: " + cardColor);
         }
     }
+    
 
     private void addCardsToPlayerPile(int numberOfCards, VBox playerPile, int playerNumber) {
         for (int i = 0; i < numberOfCards; i++) {
@@ -1588,10 +1676,13 @@ public class GameController {
                 Parent root = loader.load();
                 winnerController = loader.getController();
                 winnerController.setWinners(players);
-
+    
                 // Create a new stage for the winner screen
                 winnerStage = new Stage();
-                winnerStage.setScene(new Scene(root));
+                Scene scene = new Scene(root);
+                winnerStage.setTitle("Hick Hack");
+                winnerStage.setScene(scene);
+                winnerStage.setFullScreen(true);
                 winnerStage.setOnCloseRequest(_ -> winnerStage = null);
                 winnerStage.show();
             } else {
@@ -1599,7 +1690,7 @@ public class GameController {
                 winnerStage.toFront();
                 winnerController.setWinners(players);
             }
-
+    
             // Get the current stage and close it
             Stage currentStage = (Stage) player1ScoreLabel.getScene().getWindow();
             currentStage.close();
@@ -1607,7 +1698,6 @@ public class GameController {
             e.printStackTrace();
         }
     }
-
     // Call this method at the end of the game when all cubes are added
     private void endGame() {
         updatePlayerScores();
