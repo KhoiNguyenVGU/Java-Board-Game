@@ -4,7 +4,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+
+import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -23,6 +26,13 @@ public class Main extends Application {
             BeginController controller = loader.getController();
             controller.setMainApp(this);
 
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+            if (logoStream == null) {
+                System.out.println("Logo not found!");
+            } else {
+                primaryStage.getIcons().add(new Image(logoStream));
+            }
+
             Scene scene = new Scene(root);
             primaryStage.setTitle("Hick Hack");
             primaryStage.setScene(scene);
@@ -39,6 +49,13 @@ public class Main extends Application {
             Parent root = loader.load();
             GameController controller = loader.getController();
             controller.setGame(game);
+
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+            if (logoStream == null) {
+                System.out.println("Logo not found!");
+            } else {
+                primaryStage.getIcons().add(new Image(logoStream));
+            }
 
             Scene scene = new Scene(root);
             primaryStage.setTitle("Hick Hack");

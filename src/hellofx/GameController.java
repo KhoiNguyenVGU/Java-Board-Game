@@ -35,6 +35,7 @@ import javafx.util.Duration;
 import java.util.Iterator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1564,55 +1565,6 @@ public class GameController {
     
         return null;
     }
-    
-
-    // Helper method to find the StackPane containing the card
-    // private StackPane findCardPane(Card card) {
-    //     // Search in player piles
-    //     for (VBox playerPile : new VBox[]{player1CardPile, player2CardPile, player3CardPile}) {
-    //         for (javafx.scene.Node node : playerPile.getChildren()) {
-    //             if (node instanceof StackPane) {
-    //                 StackPane cardPane = (StackPane) node;
-    //                 if (card.equals(cardPane.getUserData())) {
-    //                     return cardPane;
-    //                 }
-    //             }
-    //         }
-    //     }
-    
-    //     // Search in areas
-    //     StackPane[] areas = {area1, area2, area3, area4, area5, area6};
-    //     for (StackPane area : areas) {
-    //         for (javafx.scene.Node node : area.getChildren()) {
-    //             if (node instanceof VBox && "cards".equals(node.getId())) {
-    //                 VBox cardVBox = (VBox) node;
-    //                 for (javafx.scene.Node cardNode : cardVBox.getChildren()) {
-    //                     if (cardNode instanceof StackPane) {
-    //                         StackPane cardPane = (StackPane) cardNode;
-    //                         if (card.equals(cardPane.getUserData())) {
-    //                             return cardPane;
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    
-    //     return null;
-    // }
-
-    // private void addCardsToDiscardPile(VBox cardVBox, List<Card> cardsToDiscard) {
-    //     for (Card card : cardsToDiscard) {
-    //         for (javafx.scene.Node node : cardVBox.getChildren()) {
-    //             StackPane cardPane = (StackPane) node;
-    //             if (card.equals(cardPane.getUserData())) {
-    //                 cardVBox.getChildren().remove(cardPane); // Remove the cardPane from the cardVBox
-    //                 discardPile.getChildren().add(cardPane); // Add the cardPane to the discard pile
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
     private String getColorName(Color color) {
         if (Color.YELLOW.equals(color)) {
             return "yellow";
@@ -1681,6 +1633,12 @@ public class GameController {
                 winnerStage = new Stage();
                 Scene scene = new Scene(root);
                 winnerStage.setTitle("Hick Hack");
+                InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+                if (logoStream == null) {
+                    System.out.println("Logo not found!");
+                } else {
+                    winnerStage.getIcons().add(new Image(logoStream));
+                }
                 winnerStage.setScene(scene);
                 winnerStage.setFullScreen(true);
                 winnerStage.setOnCloseRequest(_ -> winnerStage = null);
