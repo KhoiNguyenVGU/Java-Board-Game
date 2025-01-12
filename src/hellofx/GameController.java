@@ -1717,6 +1717,7 @@ public class GameController {
                 Parent root = loader.load();
                 winnerController = loader.getController();
                 winnerController.setWinners(players);
+                winnerController.setMainApp(mainApp);
     
                 // Create a new stage for the winner screen
                 winnerStage = new Stage();

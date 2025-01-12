@@ -58,7 +58,11 @@ public class BeginController implements Initializable {
     public void onOkButtonPressed(ActionEvent event) {
         int playerCount = 3; // Fixed number of players
         game = new Game(playerCount); // Initialize the game with the number of players
-        mainApp.showGamePage(game); // Pass the game instance to the game page
+        if (mainApp != null) {
+            mainApp.showGamePage(game); // Pass the game instance to the game page
+        } else {
+            System.err.println("mainApp is null, cannot proceed.");
+        }
     }
 
     @Override
@@ -164,7 +168,11 @@ public class BeginController implements Initializable {
 
     @FXML
     private void handleShowRulesAction(ActionEvent event) {
-        mainApp.showRulesPage();
+        if (mainApp != null) {
+            mainApp.showRulesPage();
+        } else {
+            System.err.println("mainApp is null, cannot proceed.");
+        }
     }
     
     @FXML

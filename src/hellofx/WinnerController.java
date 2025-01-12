@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -51,6 +52,11 @@ public class WinnerController implements Initializable {
     private AnchorPane rootPane;
 
     private WinnerAnimation winnerAnimation = new WinnerAnimation();
+    private Main mainApp; // Declare the mainApp field
+
+    public void setMainApp(Main mainApp) {
+        this.mainApp = mainApp;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -152,11 +158,16 @@ public class WinnerController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/begin.fxml"));
             Parent root = loader.load();
 
+            // Get the controller and set the mainApp reference
+            BeginController beginController = loader.getController();
+            beginController.setMainApp(mainApp);
+
             // Get the current stage
             Stage stage = (Stage) firstPlaceName.getScene().getWindow();
 
             // Set the new scene
             stage.setScene(new Scene(root));
+            stage.setFullScreen(true); // Maximize the stage instead of setting it to full screen
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
