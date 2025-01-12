@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.RulesController">
+   <children>
+      <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+         <content>
+            <VBox fx:id="rootVBox" alignment="CENTER" spacing="20" prefWidth="800.0">
+               <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
+                  <ImageView fx:id="gameRulesGif" fitHeight="50" fitWidth="50" />
+                  <Label fx:id="gameRulesLabel" text="Game Rules" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
+               </HBox>
+               <VBox spacing="10" prefWidth="600.0">
+                  <Text fx:id="rule1" text="• Corn Value: Each corn in the corn box represents a point value. Green Corn values 1 point, Blue Corn values 2 points, and Yellow Corn values 3 points." style="-fx-font-size: 16px;" />
+                  <Text fx:id="rule2" text="• Card Value: Each card has a value, type and color. There are 6 colors, corresponding the colors of farms, 3 types of Bird, Fox, and Fleeing Bird. The Fox Card will have 3 values: 4, 5 or 6. The Bird Card will have 4 value: 3, 4, 5, 6 while the Fleeing Bird Card has value of -2." style="-fx-font-size: 16px;" />
+                  <Text fx:id="rule3" text="• Playing Rule: Before each round, a player will add 6 random corns, one for each farm. Before the game begins, each player picks 5 cards and play with each other. In the beginning of the new round, each player will add a new card and place again the cubes to the farms." style="-fx-font-size: 16px;" />
+                  <Text fx:id="rule4" text="• Score Rule: In the case of only one card in a farm and it is a Bird or a Fleeing Bird, the player has total corns. In case it is a Fox, the player has no points. If there are a Fox and a Bird, the Fox will have the bird. If there are 2 Birds, the players will roll dice, add with the card value and compare, the player having higher score has all corns." style="-fx-font-size: 16px;" />
+                  <!-- Add more rules here -->
+               </VBox>
+               <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
+                  <ImageView fx:id="scoreRuleGif" fitHeight="50" fitWidth="50" />
+                  <Label fx:id="scoreRuleLabel" text="Score Rule" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
+               </HBox>
+               <VBox spacing="10" prefWidth="600.0">
+                  <Text fx:id="scoreRule1" text="• In case of Fox Card, if there are Bird/Fleeing Bird Cards, the Fox eats all the Bird/Fleeing Bird Cards. If there are 2 Fox Cards, 2 players fight by rolling dices, add with the Card value and compare, the player with higher score eats all Cards." style="-fx-font-size: 16px;" />
+                  <Text fx:id="scoreRule2" text="• In case of Bird Card, if there are 2 Bird Cards in a farm, 2 players fight by rolling dices, add with the Card value and compare, the player with higher score has all the corns." style="-fx-font-size: 16px;" />
+                  <Text fx:id="scoreRule3" text="• In case of Fleeing Bird Card, if there is only one Fleeing Bird Card in a farm, the player has all corns. If there is a Bird/Fox Card and a Fleeing Bird Card, the Fleeing Bird checks if there is a Green Corn in the area and takes it. The Bird will have the other corns." style="-fx-font-size: 16px;" />
+                  <Text fx:id="scoreRule4" text="• If there are only one Card in a farm, it will be added to the Discard Deck. If a Card is eaten, it will not be added to the Discard Deck. The Cards used in fight will also be added to the Discard Deck." style="-fx-font-size: 16px;" />
+                  <!-- Add more steps here -->
+               </VBox>
+               <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
+                  <ImageView fx:id="gameInstructionGif" fitHeight="50" fitWidth="50" />
+                  <Label fx:id="gameInstructionLabel" text="Game Instruction" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
+               </HBox>
+               <VBox spacing="10" prefWidth="600.0">
+                  <Text fx:id="instruction1" text="• Step 1: Player press the Place Cubes button to add new Corns to the farms." style="-fx-font-size: 16px;" />
+                  <Text fx:id="instruction2" text="• Step 2: Player will click to a preferred Card to choose a Card and the Card will move to the corresponding farm." style="-fx-font-size: 16px;" />
+                  <Text fx:id="instruction3" text="• Step 3: After 3 players have chosen a card, click the Resolve Farm button to calculate the score for each player. The chosen Cards will be added to the Discard Deck." style="-fx-font-size: 16px;" />
+                  <Text fx:id="instruction4" text="• Step 4: Each player will click the Add Cards to Player button to add a new Card. Then click the Place Cubes button to add cubes to farms." style="-fx-font-size: 16px;" />
+                  <Text fx:id="instruction5" text="• Step 5: After there are no cards left in the Card Deck, click the Reshuffle Discard Pile to reshuffle the cards and add back to the Card Deck." style="-fx-font-size: 16px;" />
+                  <Text fx:id="instruction6" text="• Step 6: The Game will continue until there is no Corns left in the Corn box. Then press the Resolve Farm button to find who is the winner." style="-fx-font-size: 16px;" />
+                  <!-- Add more steps here -->
+               </VBox>
+               <Button text="Back to Start" onAction="#handleBackToStartAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+            </VBox>
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>
