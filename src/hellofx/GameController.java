@@ -580,7 +580,7 @@ public class GameController {
     @FXML
     private void handlePlaceCubesButtonAction(ActionEvent event) {
         placeCubesInAreas();
-        // placeCubesButton.setDisable(true); // Disable the button after it is pressed
+        placeCubesButton.setDisable(true); // Disable the button after it is pressed
     }
 
     @FXML
@@ -589,8 +589,8 @@ public class GameController {
         player1CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
         placeCubesButton.setDisable(false); // Re-enable the button at the start of the next turn
-        // addCardsButton2.setDisable(true); // Enable Player 2's button
-        // addCardsButton3.setDisable(false); // Disable Player 3's button
+        addCardsButton2.setDisable(true); // Enable Player 2's button
+        addCardsButton3.setDisable(false); // Disable Player 3's button
     }
 
 
@@ -599,8 +599,8 @@ public class GameController {
         addCardsToPlayerPile(1, player2CardPile, 2);
         player2CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
-        // addCardsButton3.setDisable(true); // Enable Player 3's button
-        // addCardsButton1.setDisable(false); // Disable Player 1's button
+        addCardsButton3.setDisable(true); // Enable Player 3's button
+        addCardsButton1.setDisable(false); // Disable Player 1's button
     }
 
     @FXML
@@ -608,8 +608,8 @@ public class GameController {
         addCardsToPlayerPile(1, player3CardPile, 3);
         player3CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
-        // addCardsButton1.setDisable(true); // Enable Player1's button
-        // addCardsButton2.setDisable(false); // Disable Player 2's button
+        addCardsButton1.setDisable(true); // Enable Player1's button
+        addCardsButton2.setDisable(false); // Disable Player 2's button
     }
 
     @FXML
