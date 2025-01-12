@@ -1,10 +1,10 @@
-## Getting Started
+# Getting Started
 
 Welcome to our project! 🎉
 We’re thrilled to have you here and hope this guide helps you get everything up and running smoothly. Whether you're a contributor or a user, this project is designed to make your experience enjoyable and productive.
 
 
-## Download Instructions: 
+# Download Instructions: 
 
 - Step 1: Create a folder and navigate to clone the game
 
@@ -15,7 +15,7 @@ We’re thrilled to have you here and hope this guide helps you get everything u
 
 - Step 4: Click the `.exe` file to run the game.
 
-## Run Requirements for IDE.
+# Run Requirements for IDE.
 
 Before implementation of the game, there are multiple requirements to run the game:
 
@@ -24,7 +24,7 @@ Before implementation of the game, there are multiple requirements to run the ga
 - `Install Java Extension`: Install only this Java Extension to run and compile Java files
 ![Alt Text](src/hellofx/resources/readme/extension.png)
 
-## Code Components
+# Code Components
 
 The `resources` folder contains images of cards, farms, gifs, and scenes in fxml file, and CSS file for animation of the game.
 
@@ -37,7 +37,7 @@ There are class files in the codes, which represent the class of objects of the 
 To run the game in Programming IDE(Visual Studio Code), run the `main.java` to run the game.
 
 
-## Game Rules:
+# Game Rules:
 
 - Objective: The goal of the game is to [find the player with the highest score].
 
@@ -74,11 +74,11 @@ To run the game in Programming IDE(Visual Studio Code), run the `main.java` to r
 For more detailed game rules and strategies, check out the full [Game Rule Documentation](https://kevinandgames.blogspot.com/2011/12/review-hick-hack-in-gackelwack.html).
 
 
-## GUI Description
+# GUI Description
 
 The Graphical User Interface (GUI) of the game provides a user-friendly environment for players to interact with the game. Below is an overview of the main sections and components of the GUI:
 
-# Begin Window:
+## Begin Window:
 
 - `Title bar`: Displays the title of the game
 
@@ -90,7 +90,7 @@ The Graphical User Interface (GUI) of the game provides a user-friendly environm
 
     - `Exit Button`: Closes the application.
 
-# Game Window:
+## Game Window:
 
 Here is the User Interface(UI) of the Game:
 
@@ -112,7 +112,7 @@ Here is the User Interface(UI) of the Game:
 
 - `Place Cubes Button`: To add one corn to each farm before a round starts.
 
-# Winner Window:
+## Winner Window:
 
 Here will show the winner of the game and 2 players with their scores and animation for the winner.
 
