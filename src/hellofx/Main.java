@@ -21,12 +21,12 @@ public class Main extends Application {
 
     public void showBeginPage() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("begin.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/begin.fxml"));
             Parent root = loader.load();
             BeginController controller = loader.getController();
             controller.setMainApp(this);
 
-            InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/resources/logo/logo.jpg");
             if (logoStream == null) {
                 System.out.println("Logo not found!");
             } else {
@@ -36,7 +36,7 @@ public class Main extends Application {
             Scene scene = new Scene(root);
             primaryStage.setTitle("Hick Hack");
             primaryStage.setScene(scene);
-            primaryStage.setFullScreen(true); // Set the stage to full screen
+            primaryStage.setMaximized(true); // Maximize the stage instead of setting it to full screen
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,12 +45,13 @@ public class Main extends Application {
 
     public void showGamePage(Game game) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("game.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/game.fxml"));
             Parent root = loader.load();
             GameController controller = loader.getController();
+            controller.setMainApp(this); // Ensure the mainApp reference is set
             controller.setGame(game);
 
-            InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/resources/logo/logo.jpg");
             if (logoStream == null) {
                 System.out.println("Logo not found!");
             } else {
@@ -60,7 +61,31 @@ public class Main extends Application {
             Scene scene = new Scene(root);
             primaryStage.setTitle("Hick Hack");
             primaryStage.setScene(scene);
-            primaryStage.setFullScreen(true); // Set the stage to full screen
+            primaryStage.setFullScreen(true); // Maximize the stage instead of setting it to full screen
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showRulesPage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/rules.fxml"));
+            Parent root = loader.load();
+            RulesController controller = loader.getController();
+            controller.setMainApp(this);
+
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/resources/logo/logo.jpg");
+            if (logoStream == null) {
+                System.out.println("Logo not found!");
+            } else {
+                primaryStage.getIcons().add(new Image(logoStream));
+            }
+
+            Scene scene = new Scene(root);
+            primaryStage.setTitle("Hick Hack - Rules");
+            primaryStage.setScene(scene);
+            primaryStage.setFullScreen(true); // Maximize the stage instead of setting it to full screen
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();

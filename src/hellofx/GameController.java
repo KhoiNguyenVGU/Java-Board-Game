@@ -27,6 +27,9 @@ import javafx.scene.shape.Box;
 
 import javafx.stage.Stage;
 import javafx.scene.paint.PhongMaterial;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
@@ -55,6 +58,9 @@ public class GameController {
 
     @FXML
     private StackPane cardPile;
+
+    @FXML
+    private Button backToStartButton;
 
     @FXML
     private VBox cubeBox;
@@ -109,6 +115,13 @@ public class GameController {
     private int scorePlayer2 = 0;
     private int scorePlayer3 = 0;
 
+    private Main mainApp;
+
+    public void setMainApp(Main mainApp) {
+        this.mainApp = mainApp;
+    }
+    
+
     public void setGame(Game game) {
         this.game = game;
         initializeGame(); // Initialize game-related components
@@ -127,6 +140,7 @@ public class GameController {
         initializeAreaTotalValueMap();
         updatePlayerScores();
         chooseCardsInOrder();
+        applyAnimations();
 
         // Hide player 2 and player 3 piles initially
         player2CardPile.setVisible(false);
@@ -143,9 +157,49 @@ public class GameController {
         createAndShuffleCards();
     }
 
+    private void applyAnimations() {
+        // Bounce animation for buttons
+        Timeline bounceTimeline = new Timeline(
+            new KeyFrame(Duration.ZERO, 
+                new KeyValue(addCardsButton1.translateYProperty(), 0),
+                new KeyValue(addCardsButton2.translateYProperty(), 0),
+                new KeyValue(addCardsButton3.translateYProperty(), 0),
+                new KeyValue(resolveFarmButton.translateYProperty(), 0),
+                new KeyValue(reshuffleButton.translateYProperty(), 0),
+                new KeyValue(placeCubesButton.translateYProperty(), 0)
+            ),
+            new KeyFrame(Duration.seconds(0.4), 
+                new KeyValue(addCardsButton1.translateYProperty(), -15),
+                new KeyValue(addCardsButton2.translateYProperty(), -15),
+                new KeyValue(addCardsButton3.translateYProperty(), -15),
+                new KeyValue(resolveFarmButton.translateYProperty(), -15),
+                new KeyValue(reshuffleButton.translateYProperty(), -15),
+                new KeyValue(placeCubesButton.translateYProperty(), -15)
+            ),
+            new KeyFrame(Duration.seconds(0.6), 
+                new KeyValue(addCardsButton1.translateYProperty(), -7),
+                new KeyValue(addCardsButton2.translateYProperty(), -7),
+                new KeyValue(addCardsButton3.translateYProperty(), -7),
+                new KeyValue(resolveFarmButton.translateYProperty(), -7),
+                new KeyValue(reshuffleButton.translateYProperty(), -7),
+                new KeyValue(placeCubesButton.translateYProperty(), -7)
+            ),
+            new KeyFrame(Duration.seconds(1.0), 
+                new KeyValue(addCardsButton1.translateYProperty(), 0),
+                new KeyValue(addCardsButton2.translateYProperty(), 0),
+                new KeyValue(addCardsButton3.translateYProperty(), 0),
+                new KeyValue(resolveFarmButton.translateYProperty(), 0),
+                new KeyValue(reshuffleButton.translateYProperty(), 0),
+                new KeyValue(placeCubesButton.translateYProperty(), 0)
+            )
+        );
+        bounceTimeline.setCycleCount(Timeline.INDEFINITE);
+        bounceTimeline.play();
+    }
+
     private void setAreaBackgroundImages() {
         // Define the path to the folder containing the images
-        String imageFolderPath = "src/hellofx/areas/";
+        String imageFolderPath = "src/hellofx/resources/areas/";
     
         // Map each color to its corresponding image file name
         Map<Color, String> colorToImageFileMap = new HashMap<>();
@@ -216,7 +270,7 @@ public class GameController {
         String cardColor = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
         
         // Load the image for the card
-        String imagePath = "src/hellofx/cards/" + card.getType() + "_" + card.getValue() + "_" + cardColor + ".png";
+        String imagePath = "src/hellofx/resources/cards/" + card.getType() + "_" + card.getValue() + "_" + cardColor + ".png";
         try {
             Image image = new Image(new FileInputStream(imagePath));
             ImageView imageView = new ImageView(image);
@@ -441,7 +495,7 @@ public class GameController {
         transition.setInterpolator(javafx.animation.Interpolator.EASE_BOTH);
     
         // When the animation finishes, move the original card to the correct VBox
-        transition.setOnFinished(event -> {
+        transition.setOnFinished(_ -> {
             // Remove clone from main grid
             mainGrid.getChildren().remove(cardClone);
             // Add original card to the target area
@@ -520,11 +574,13 @@ public class GameController {
         player2CardSelected = false; // Reset the flag for the next turn
         player3CardSelected = false; // Reset the flag for the next turn
         currentPlayerTurn = 1; // Reset to the first player
+        
     }
 
     @FXML
     private void handlePlaceCubesButtonAction(ActionEvent event) {
         placeCubesInAreas();
+        // placeCubesButton.setDisable(true); // Disable the button after it is pressed
     }
 
     @FXML
@@ -532,13 +588,19 @@ public class GameController {
         addCardsToPlayerPile(1, player1CardPile, 1);
         player1CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
+        placeCubesButton.setDisable(false); // Re-enable the button at the start of the next turn
+        // addCardsButton2.setDisable(true); // Enable Player 2's button
+        // addCardsButton3.setDisable(false); // Disable Player 3's button
     }
+
 
     @FXML
     private void handleAddCardsToPlayer2Action() {
         addCardsToPlayerPile(1, player2CardPile, 2);
         player2CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
+        // addCardsButton3.setDisable(true); // Enable Player 3's button
+        // addCardsButton1.setDisable(false); // Disable Player 1's button
     }
 
     @FXML
@@ -546,6 +608,31 @@ public class GameController {
         addCardsToPlayerPile(1, player3CardPile, 3);
         player3CardSelected = false; // Reset the flag after adding a card
         updateAddCardsButtons(); // Update the buttons after adding a card
+        // addCardsButton1.setDisable(true); // Enable Player1's button
+        // addCardsButton2.setDisable(false); // Disable Player 2's button
+    }
+
+    @FXML
+    private void handleBackToStartAction(ActionEvent event) {
+        try {
+            // Load the begin.fxml file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/begin.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and set the mainApp reference
+            BeginController beginController = loader.getController();
+            beginController.setMainApp(mainApp);
+
+            // Get the current stage
+            Stage stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+
+            // Set the new scene
+            stage.setScene(new Scene(root));
+            stage.setFullScreen(true); // Maximize the stage instead of setting it to full screen
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void placeCubesInAreas() {
@@ -682,6 +769,8 @@ public class GameController {
 
     @FXML
     private StackPane discardPile;
+
+
     private Map<Integer, Integer> calculatePlayerScores() {
         Map<Integer, Integer> playerScores = new HashMap<>();
         Random random = new Random();
@@ -1624,7 +1713,7 @@ public class GameController {
     private void showWinnerScreen(List<Player> players) {
         try {
             if (winnerStage == null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("winner.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/winner.fxml"));
                 Parent root = loader.load();
                 winnerController = loader.getController();
                 winnerController.setWinners(players);
@@ -1633,29 +1722,29 @@ public class GameController {
                 winnerStage = new Stage();
                 Scene scene = new Scene(root);
                 winnerStage.setTitle("Hick Hack");
-                InputStream logoStream = getClass().getResourceAsStream("/hellofx/logo/logo.jpg");
+                InputStream logoStream = getClass().getResourceAsStream("/hellofx/resources/logo/logo.jpg");
                 if (logoStream == null) {
                     System.out.println("Logo not found!");
                 } else {
                     winnerStage.getIcons().add(new Image(logoStream));
                 }
                 winnerStage.setScene(scene);
-                winnerStage.setFullScreen(true);
-                winnerStage.setOnCloseRequest(_ -> winnerStage = null);
+                winnerStage.setFullScreen(true); // Set the stage to full screen
                 winnerStage.show();
             } else {
-                // If the winner stage is already open, bring it to the front and update the winners
-                winnerStage.toFront();
                 winnerController.setWinners(players);
+                winnerStage.setFullScreen(true); // Ensure the stage is full screen
+                winnerStage.show();
             }
-    
-            // Get the current stage and close it
-            Stage currentStage = (Stage) player1ScoreLabel.getScene().getWindow();
+
+            // Close the current game stage
+            Stage currentStage = (Stage) cubeFlowPane.getScene().getWindow();
             currentStage.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     // Call this method at the end of the game when all cubes are added
     private void endGame() {
         updatePlayerScores();
