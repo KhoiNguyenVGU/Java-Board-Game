@@ -22,6 +22,7 @@ Before implementation of the game, there are multiple requirements to run the ga
 - `Install latest Java Version`: Install Java SDK 23.0.1 or later to run the game
 - `Add configuration to project`: To run the JavaFX application in VS Code, add the following line to your launch.json file under the vmArgs field ` "vmArgs": "--enable-preview --module-path \"path-to-your-jdk-lib" --add-modules javafx.controls,javafx.fxml" `
 - `Install Java Extension`: Install only this Java Extension to run and compile Java files
+  
 ![Alt Text](src/hellofx/resources/readme/extension.png)
 
 # Code Components
