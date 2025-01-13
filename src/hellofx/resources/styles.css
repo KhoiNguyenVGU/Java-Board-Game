@@ -1,3 +1,14 @@
+/*
+    styles.css
+
+    This CSS file defines the styles for the JavaFX application.
+    It includes general styles, title styles, player name styles, winner name styles,
+    rank label styles, podium box styles, confetti animation, button animation, and hover effects.
+
+    Author: Khoi Nguyen
+    Date: [Insert Date]
+*/
+
 /* General Styles */
 .root {
     background-color: #f5f5f5; /* Standard property */

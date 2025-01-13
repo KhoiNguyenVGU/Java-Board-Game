@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    winner.fxml
+
+    This FXML file defines the layout for the winner screen of the JavaFX application.
+    It includes a title label, a podium for the top three players, and two buttons:
+    "Play Again" and "Exit". The buttons are linked to their respective event handlers
+    in the WinnerController class.
+
+-->
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -9,7 +19,10 @@
 
 <StackPane alignment="CENTER" prefHeight="1000" prefWidth="1000" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.WinnerController">
    <children>
+      <!-- Root pane for the winner screen -->
       <AnchorPane fx:id="rootPane" prefHeight="600.0" prefWidth="800.0" />
+      
+      <!-- VBox to hold the title, podium, and buttons -->
       <VBox alignment="CENTER" prefHeight="691.0" prefWidth="872.0" spacing="30" style="-fx-padding: 50 0 0 0;">
          <!-- Title -->
          <Label styleClass="title" text="🏆 The Winner is..." style="-fx-text-fill: black;" />
@@ -40,7 +53,10 @@
          <!-- Buttons -->
          <HBox alignment="CENTER" spacing="20">
             <children>
+               <!-- Play Again button -->
                <Button fx:id="playAgainButton" text="Play Again" onAction="#handlePlayAgainAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-border-color: white; -fx-border-width: 2px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0.5, 0, 1);" />
+               
+               <!-- Exit button -->
                <Button fx:id="exitButton" text="Exit" onAction="#handleExitAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-border-color: white; -fx-border-width: 2px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0.5, 0, 1);" />
             </children>
          </HBox>

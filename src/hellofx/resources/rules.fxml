@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+    rules.fxml
+
+    This FXML file defines the layout for the rules screen of the JavaFX application.
+    It includes sections for game rules, score rules, and game instructions.
+    The buttons are linked to their respective event handlers in the RulesController class.
+
+    Author: Khoi Nguyen
+    Date: [Insert Date]
+-->
+
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
@@ -11,9 +22,11 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.RulesController">
    <children>
+      <!-- ScrollPane to allow scrolling through the rules -->
       <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
          <content>
             <VBox fx:id="rootVBox" alignment="CENTER" spacing="20" prefWidth="800.0">
+               <!-- Game Rules section -->
                <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
                   <ImageView fx:id="gameRulesGif" fitHeight="50" fitWidth="50" />
                   <Label fx:id="gameRulesLabel" text="Game Rules" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
@@ -25,6 +38,7 @@
                   <Text fx:id="rule4" text="• Score Rule: In the case of only one card in a farm and it is a Bird or a Fleeing Bird, the player has total corns. In case it is a Fox, the player has no points. If there are a Fox and a Bird, the Fox will have the bird. If there are 2 Birds, the players will roll dice, add with the card value and compare, the player having higher score has all corns." style="-fx-font-size: 16px;" />
                   <!-- Add more rules here -->
                </VBox>
+               <!-- Score Rules section -->
                <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
                   <ImageView fx:id="scoreRuleGif" fitHeight="50" fitWidth="50" />
                   <Label fx:id="scoreRuleLabel" text="Score Rule" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
@@ -36,6 +50,7 @@
                   <Text fx:id="scoreRule4" text="• If there are only one Card in a farm, it will be added to the Discard Deck. If a Card is eaten, it will not be added to the Discard Deck. The Cards used in fight will also be added to the Discard Deck." style="-fx-font-size: 16px;" />
                   <!-- Add more steps here -->
                </VBox>
+               <!-- Game Instructions section -->
                <HBox alignment="CENTER" spacing="10" style="-fx-background-color: black;">
                   <ImageView fx:id="gameInstructionGif" fitHeight="50" fitWidth="50" />
                   <Label fx:id="gameInstructionLabel" text="Game Instruction" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;" />
@@ -49,6 +64,7 @@
                   <Text fx:id="instruction6" text="• Step 6: The Game will continue until there is no Corns left in the Corn box. Then press the Resolve Farm button to find who is the winner." style="-fx-font-size: 16px;" />
                   <!-- Add more steps here -->
                </VBox>
+               <!-- Back to Start button -->
                <Button text="Back to Start" onAction="#handleBackToStartAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
             </VBox>
          </content>

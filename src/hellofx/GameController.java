@@ -1,55 +1,62 @@
-package hellofx;
+/**
+ * GameController.java
+ * 
+ * This class is the controller for the game screen of the JavaFX application.
+ * It handles the initialization of UI components, loading of resources, and 
+ * provides event handlers for button actions.
+ */
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-// import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Box;
+ package hellofx;
 
-import javafx.stage.Stage;
-import javafx.scene.paint.PhongMaterial;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.animation.TranslateTransition;
-import javafx.event.ActionEvent;
-import javafx.util.Duration;
+ // Import necessary classes from JavaFX
+ import javafx.fxml.FXML;
+ import javafx.fxml.FXMLLoader;
+ import javafx.geometry.Bounds;
+ import javafx.geometry.Insets;
+ import javafx.geometry.Pos;
+ import javafx.scene.Parent;
+ import javafx.scene.Scene;
+ import javafx.scene.control.Button;
+ import javafx.scene.image.Image;
+ import javafx.scene.image.ImageView;
+ import javafx.scene.layout.StackPane;
+ import javafx.scene.layout.VBox;
+ import javafx.scene.layout.Background;
+ import javafx.scene.layout.BackgroundImage;
+ import javafx.scene.layout.BackgroundPosition;
+ import javafx.scene.layout.BackgroundRepeat;
+ import javafx.scene.layout.BackgroundSize;
+ import javafx.scene.layout.FlowPane;
+ import javafx.scene.layout.GridPane;
+ import javafx.scene.layout.Pane;
+ import javafx.scene.control.Label;
+ import javafx.scene.paint.Color;
+ import javafx.scene.shape.Box;
+ import javafx.stage.Stage;
+ import javafx.scene.paint.PhongMaterial;
+ import javafx.animation.KeyFrame;
+ import javafx.animation.KeyValue;
+ import javafx.animation.Timeline;
+ import javafx.animation.TranslateTransition;
+ import javafx.event.ActionEvent;
+ import javafx.util.Duration;
+ 
+ import java.util.Iterator;
+ import java.io.FileInputStream;
+ import java.io.FileNotFoundException;
+ import java.io.InputStream;
+ import java.util.ArrayList;
+ import java.util.Arrays;
+ import java.util.Collections;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.Random;
+ import java.util.stream.Collectors;
+ 
+ public class GameController {
 
-
-import java.util.Iterator;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-public class GameController {
-
+    // FXML annotations to bind UI components from the FXML file
     @FXML
     private StackPane area1, area2, area3, area4, area5, area6;
 
@@ -74,6 +81,7 @@ public class GameController {
     @FXML
     private Button placeCubesButton;
 
+    // Map to store the total value of each area
     private Map<StackPane, Integer> areaTotalValueMap = new HashMap<>();
 
     @FXML
@@ -94,110 +102,128 @@ public class GameController {
     @FXML
     private Label player1ScoreLabel, player2ScoreLabel, player3ScoreLabel;
 
+    // Game instance
     private Game game;
 
+    // Maps to store color to area and color to value mappings
     private Map<Color, StackPane> colorToAreaMap;
     private Map<Color, Integer> colorToValueMap;
 
+    // Flags to track if a player has selected a card
     private boolean player1CardSelected = false;
     private boolean player2CardSelected = false;
     private boolean player3CardSelected = false;
 
+    // Map to store the selected cards for each player
     private Map<Integer, Card> playerCardMap = new HashMap<>();
 
+    // Variable to track the current player's turn
     private int currentPlayerTurn = 1;
 
+    // Player instances
     private Player player1 = new Player("Player 1");
     private Player player2 = new Player("Player 2");
     private Player player3 = new Player("Player 3");
 
+    // Variables to store the scores of each player
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
     private int scorePlayer3 = 0;
 
+    // Main application instance
     private Main mainApp;
+ 
+     /**
+      * Sets the main application instance.
+      * 
+      * @param mainApp the main application instance
+      */
+     public void setMainApp(Main mainApp) {
+         this.mainApp = mainApp;
+     }
+ 
+     /**
+      * Sets the game instance and initializes game-related components.
+      * 
+      * @param game the game instance
+      */
+     public void setGame(Game game) {
+         this.game = game;
+         initializeGame(); // Initialize game-related components
+         addCardsToPlayerPile(5, player1CardPile, 1); // Add 5 cards to player 1's pile at the start
+         addCardsToPlayerPile(5, player2CardPile, 2); // Add 5 cards to player 2's pile at the start
+         addCardsToPlayerPile(5, player3CardPile, 3); // Add 5 cards to player 3's pile at the start
+     }
+ 
+     @FXML
+     public void initialize() {
+         createCubes();
+         initializeColorToAreaMap(); // Initialize the color to area map first
+         setAreaBackgroundImages(); // Call the method to set background images
+         updateAddCardsButtons();
+         initializeColorToValueMap();
+         initializeAreaTotalValueMap();
+         updatePlayerScores();
+         chooseCardsInOrder();
+         applyAnimations();
+ 
+         // Hide player 2 and player 3 piles initially
+         player2CardPile.setVisible(false);
+         player3CardPile.setVisible(false);
+         resolveFarmButton.setOnAction(_ -> {
+             handleResolveFarmAction();
+             if (cubeFlowPane.getChildren().isEmpty()) {
+                 endGame();
+             }
+         });
+     }
+ 
+     // Initialize the game by creating and shuffling the cards
+     private void initializeGame() {
+         createAndShuffleCards();
+     }
+ 
+     private void applyAnimations() {
+         // Bounce animation for buttons
+         Timeline bounceTimeline = new Timeline(
+             new KeyFrame(Duration.ZERO, 
+                 new KeyValue(addCardsButton1.translateYProperty(), 0),
+                 new KeyValue(addCardsButton2.translateYProperty(), 0),
+                 new KeyValue(addCardsButton3.translateYProperty(), 0),
+                 new KeyValue(resolveFarmButton.translateYProperty(), 0),
+                 new KeyValue(reshuffleButton.translateYProperty(), 0),
+                 new KeyValue(placeCubesButton.translateYProperty(), 0)
+             ),
+             new KeyFrame(Duration.seconds(0.4), 
+                 new KeyValue(addCardsButton1.translateYProperty(), -15),
+                 new KeyValue(addCardsButton2.translateYProperty(), -15),
+                 new KeyValue(addCardsButton3.translateYProperty(), -15),
+                 new KeyValue(resolveFarmButton.translateYProperty(), -15),
+                 new KeyValue(reshuffleButton.translateYProperty(), -15),
+                 new KeyValue(placeCubesButton.translateYProperty(), -15)
+             ),
+             new KeyFrame(Duration.seconds(0.6), 
+                 new KeyValue(addCardsButton1.translateYProperty(), -7),
+                 new KeyValue(addCardsButton2.translateYProperty(), -7),
+                 new KeyValue(addCardsButton3.translateYProperty(), -7),
+                 new KeyValue(resolveFarmButton.translateYProperty(), -7),
+                 new KeyValue(reshuffleButton.translateYProperty(), -7),
+                 new KeyValue(placeCubesButton.translateYProperty(), -7)
+             ),
+             new KeyFrame(Duration.seconds(1.0), 
+                 new KeyValue(addCardsButton1.translateYProperty(), 0),
+                 new KeyValue(addCardsButton2.translateYProperty(), 0),
+                 new KeyValue(addCardsButton3.translateYProperty(), 0),
+                 new KeyValue(resolveFarmButton.translateYProperty(), 0),
+                 new KeyValue(reshuffleButton.translateYProperty(), 0),
+                 new KeyValue(placeCubesButton.translateYProperty(), 0)
+             )
+         );
+         bounceTimeline.setCycleCount(Timeline.INDEFINITE);
+         bounceTimeline.play();
+     }
 
-    public void setMainApp(Main mainApp) {
-        this.mainApp = mainApp;
-    }
-    
-
-    public void setGame(Game game) {
-        this.game = game;
-        initializeGame(); // Initialize game-related components
-        addCardsToPlayerPile(5, player1CardPile, 1); // Add 5 cards to player 1's pile at the start
-        addCardsToPlayerPile(5, player2CardPile, 2); // Add 5 cards to player 2's pile at the start
-        addCardsToPlayerPile(5, player3CardPile, 3); // Add 5 cards to player 3's pile at the start
-    }
-
-    @FXML
-    public void initialize() {
-        createCubes();
-        initializeColorToAreaMap(); // Initialize the color to area map first
-        setAreaBackgroundImages(); // Call the method to set background images
-        updateAddCardsButtons();
-        initializeColorToValueMap();
-        initializeAreaTotalValueMap();
-        updatePlayerScores();
-        chooseCardsInOrder();
-        applyAnimations();
-
-        // Hide player 2 and player 3 piles initially
-        player2CardPile.setVisible(false);
-        player3CardPile.setVisible(false);
-        resolveFarmButton.setOnAction(_ -> {
-            handleResolveFarmAction();
-            if (cubeFlowPane.getChildren().isEmpty()) {
-                endGame();
-            }
-        });
-    }
-
-    private void initializeGame() {
-        createAndShuffleCards();
-    }
-
-    private void applyAnimations() {
-        // Bounce animation for buttons
-        Timeline bounceTimeline = new Timeline(
-            new KeyFrame(Duration.ZERO, 
-                new KeyValue(addCardsButton1.translateYProperty(), 0),
-                new KeyValue(addCardsButton2.translateYProperty(), 0),
-                new KeyValue(addCardsButton3.translateYProperty(), 0),
-                new KeyValue(resolveFarmButton.translateYProperty(), 0),
-                new KeyValue(reshuffleButton.translateYProperty(), 0),
-                new KeyValue(placeCubesButton.translateYProperty(), 0)
-            ),
-            new KeyFrame(Duration.seconds(0.4), 
-                new KeyValue(addCardsButton1.translateYProperty(), -15),
-                new KeyValue(addCardsButton2.translateYProperty(), -15),
-                new KeyValue(addCardsButton3.translateYProperty(), -15),
-                new KeyValue(resolveFarmButton.translateYProperty(), -15),
-                new KeyValue(reshuffleButton.translateYProperty(), -15),
-                new KeyValue(placeCubesButton.translateYProperty(), -15)
-            ),
-            new KeyFrame(Duration.seconds(0.6), 
-                new KeyValue(addCardsButton1.translateYProperty(), -7),
-                new KeyValue(addCardsButton2.translateYProperty(), -7),
-                new KeyValue(addCardsButton3.translateYProperty(), -7),
-                new KeyValue(resolveFarmButton.translateYProperty(), -7),
-                new KeyValue(reshuffleButton.translateYProperty(), -7),
-                new KeyValue(placeCubesButton.translateYProperty(), -7)
-            ),
-            new KeyFrame(Duration.seconds(1.0), 
-                new KeyValue(addCardsButton1.translateYProperty(), 0),
-                new KeyValue(addCardsButton2.translateYProperty(), 0),
-                new KeyValue(addCardsButton3.translateYProperty(), 0),
-                new KeyValue(resolveFarmButton.translateYProperty(), 0),
-                new KeyValue(reshuffleButton.translateYProperty(), 0),
-                new KeyValue(placeCubesButton.translateYProperty(), 0)
-            )
-        );
-        bounceTimeline.setCycleCount(Timeline.INDEFINITE);
-        bounceTimeline.play();
-    }
-
-    private void setAreaBackgroundImages() {
+     private void setAreaBackgroundImages() {
         // Define the path to the folder containing the images
         String imageFolderPath = "src/hellofx/resources/areas/";
     
@@ -236,7 +262,8 @@ public class GameController {
             }
         }
     }
-
+    
+    // Initialize the color to area map
     private void initializeColorToAreaMap() {
         colorToAreaMap = new HashMap<>();
         colorToAreaMap.put(Color.YELLOW, area1);
@@ -246,14 +273,16 @@ public class GameController {
         colorToAreaMap.put(Color.PURPLE, area5);
         colorToAreaMap.put(Color.BLACK, area6); // Assuming area6 is for orange cards
     }
-
+    
+    // Initialize the color to value map
     private void initializeColorToValueMap() {
         colorToValueMap = new HashMap<>();
         colorToValueMap.put(Color.GREEN, 1);
         colorToValueMap.put(Color.BLUE, 2);
         colorToValueMap.put(Color.YELLOW, 3);
     }
-
+    
+    // Initialize the area total value map
     private void initializeAreaTotalValueMap() {
         areaTotalValueMap = new HashMap<>();
         areaTotalValueMap.put(area1, 0);
@@ -262,9 +291,9 @@ public class GameController {
         areaTotalValueMap.put(area4, 0);
         areaTotalValueMap.put(area5, 0);
         areaTotalValueMap.put(area6, 0);
-        
     }
-
+    
+    // Create an ImageView for the card
     private ImageView createCardImageView(Card card) {
         // Change card color from orange to black if necessary
         String cardColor = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
@@ -291,7 +320,8 @@ public class GameController {
             return new ImageView(); // Return an empty ImageView as a fallback
         }
     }
-
+    
+    // Create and shuffle the cards in the card pile
     private void createAndShuffleCards() {
         List<ImageView> cards = new ArrayList<>();
         for (Card card : game.getDeck()) {
@@ -313,7 +343,8 @@ public class GameController {
         // Debug: Print the number of cards added
         System.out.println("Number of cards added to cardPile: " + cards.size());
     }
-
+    
+    // Create cubes and add them to the cube flow pane
     private void createCubes() {
         List<StackPane> cubes = new ArrayList<>();
         for (int i = 0; i < 26; i++) {
@@ -321,28 +352,30 @@ public class GameController {
             cubes.add(createCubeWithBorder(Color.GREEN));
             cubes.add(createCubeWithBorder(Color.BLUE));
         }
-
+    
         // Shuffle the cubes to place them randomly
         Collections.shuffle(cubes);
-
+    
         cubeFlowPane.getChildren().addAll(cubes);
     }
-
+    
+    // Create a cube with a border of the specified color
     private StackPane createCubeWithBorder(Color color) {
         StackPane stack = new StackPane();
-
+    
         // Create the border box
         Box borderBox = new Box(22, 22, 22); // Slightly larger for the border
         borderBox.setMaterial(new PhongMaterial(Color.WHITE));
-
+    
         // Create the inner cube
         Box cube = new Box(20, 20, 20); // Smaller cube
         cube.setMaterial(new PhongMaterial(color));
-
+    
         stack.getChildren().addAll(borderBox, cube);
         return stack;
     }
-
+    
+    // Add cards to the player pile
     private void addCardToPlayerPile(Card card, VBox playerPile, int playerNumber) {
         ImageView cardImageView = createCardImageView(card);
         cardImageView.setFitWidth(50);
@@ -384,12 +417,14 @@ public class GameController {
         }
     }
 
+    // Transition to the next player's turn
     private void transitionToNextPlayer(VBox nextPlayerPile, VBox otherPlayerPile1, VBox otherPlayerPile2) {
         nextPlayerPile.setVisible(true);
         otherPlayerPile1.setVisible(false);
         otherPlayerPile2.setVisible(false);
     }
 
+    // Handle card selection by a player
     private void handleCardSelection(Card card, Pane playerPile, ImageView cardImageView, int playerNumber) {
         // Debug: Print the player number and the card they chose
         System.out.println("Player " + playerNumber + " selected card: " + card);
@@ -432,6 +467,7 @@ public class GameController {
         }
     }
     
+    // Transition the card to the target area
     private void transitionCard(ImageView cardImageView, Pane startPane, String cardColor, int playerNumber) {
         // Create a clone of the cardImageView for the transition
         ImageView cardClone = new ImageView(cardImageView.getImage());
@@ -523,6 +559,7 @@ public class GameController {
         transition.play();
     }
 
+    // Get the target area based on the card color
     private StackPane getTargetAreaByColor(GridPane mainGrid, String cardColor) {
         switch (cardColor.toLowerCase()) {
             case "yellow":
@@ -545,7 +582,7 @@ public class GameController {
         }
     }
     
-
+    // Add cards to the player pile
     private void addCardsToPlayerPile(int numberOfCards, VBox playerPile, int playerNumber) {
         for (int i = 0; i < numberOfCards; i++) {
             if (!cardPile.getChildren().isEmpty()) {
@@ -578,12 +615,14 @@ public class GameController {
     }
 
     @FXML
+    // Handle place cubes button action
     private void handlePlaceCubesButtonAction(ActionEvent event) {
         placeCubesInAreas();
         placeCubesButton.setDisable(true); // Disable the button after it is pressed
     }
 
     @FXML
+    // Handle add cards to player 1 button action
     private void handleAddCardsToPlayer1Action() {
         addCardsToPlayerPile(1, player1CardPile, 1);
         player1CardSelected = false; // Reset the flag after adding a card
@@ -595,6 +634,7 @@ public class GameController {
 
 
     @FXML
+    // Handle add cards to player 2 button action
     private void handleAddCardsToPlayer2Action() {
         addCardsToPlayerPile(1, player2CardPile, 2);
         player2CardSelected = false; // Reset the flag after adding a card
@@ -604,6 +644,7 @@ public class GameController {
     }
 
     @FXML
+    // Handle add cards to player 3 button action
     private void handleAddCardsToPlayer3Action() {
         addCardsToPlayerPile(1, player3CardPile, 3);
         player3CardSelected = false; // Reset the flag after adding a card
@@ -613,6 +654,7 @@ public class GameController {
     }
 
     @FXML
+    // Handle back to start button action
     private void handleBackToStartAction(ActionEvent event) {
         try {
             // Load the begin.fxml file
@@ -635,6 +677,7 @@ public class GameController {
         }
     }
 
+    // Place cubes in the areas
     private void placeCubesInAreas() {
         StackPane[] areas = {area1, area2, area3, area4, area5, area6};
     
@@ -720,12 +763,14 @@ public class GameController {
     //     area6.setStyle("-fx-background-color: black;");
     // }
 
+    // Update the add cards buttons based on the number of cards in the player piles
     private void updateAddCardsButtons() {
         addCardsButton1.setDisable(player1CardPile.getChildren().size() != 4);
         addCardsButton2.setDisable(player2CardPile.getChildren().size() != 4);
         addCardsButton3.setDisable(player3CardPile.getChildren().size() != 4);
     }
 
+    // Update the player scores based on the cards in the areas
     private void updatePlayerScores() {
         Map<Integer, Integer> playerScores = calculatePlayerScores();
     
@@ -754,6 +799,7 @@ public class GameController {
     }
 
 
+    // Choose cards in order from the player piles
     private void chooseCardsInOrder() {
         chooseCardFromPlayer(1);
         chooseCardFromPlayer(2);
@@ -761,6 +807,7 @@ public class GameController {
         
     }
     
+    // Choose a card from the specified player's pile
     private void chooseCardFromPlayer(int playerNumber) {
         // Logic to choose a card from the specified player's pile
         // This is a placeholder for the actual implementation
@@ -770,7 +817,7 @@ public class GameController {
     @FXML
     private StackPane discardPile;
 
-
+    // Calculate the scores for each player based on the cards in the areas
     private Map<Integer, Integer> calculatePlayerScores() {
         Map<Integer, Integer> playerScores = new HashMap<>();
         Random random = new Random();
@@ -1490,6 +1537,7 @@ public class GameController {
             }
         }
     
+        // cubeVBoxx not null
         if (cubeVBox != null) {
             Iterator<javafx.scene.Node> iterator = cubeVBox.getChildren().iterator();
             while (iterator.hasNext()) {
@@ -1549,6 +1597,7 @@ public class GameController {
         System.out.println("All cubes cleared from the VBox in area " + area.getId());
     }
 
+    // Helper method to print the cubes in the VBox
     private void printCubesInArea(StackPane area) {
         VBox cubeVBox = null;
     
@@ -1578,6 +1627,7 @@ public class GameController {
         }
     }
 
+    // Add a card to the discard pile
     private void addCardToDiscardPile(Card card) {
         ImageView cardImageView = createCardImageView(card);
         cardImageView.setFitWidth(100); // Set the desired width
@@ -1621,6 +1671,7 @@ public class GameController {
         }
     }
 
+    // Find the ImageView for a card
     private ImageView findCardImageView(Card card) {
         // Search in player piles
         for (VBox playerPile : new VBox[]{player1CardPile, player2CardPile, player3CardPile}) {
@@ -1654,6 +1705,8 @@ public class GameController {
     
         return null;
     }
+    
+    // Get the color name for a cube
     private String getColorName(Color color) {
         if (Color.YELLOW.equals(color)) {
             return "yellow";
@@ -1670,6 +1723,7 @@ public class GameController {
     private Button reshuffleButton;
 
     @FXML
+    // Handle the reshuffle button action
     private void handleReshuffleButtonAction() {
         if (cardPile.getChildren().isEmpty()) {
             // Shuffle the discard pile and add the cards back to the card pile
@@ -1705,11 +1759,13 @@ public class GameController {
     private Stage winnerStage;
     private WinnerController winnerController;
 
+    // Declare the winner of the game
     private void declareWinner() {
         List<Player> players = getPlayersSortedByScore();
         showWinnerScreen(players);
     }
 
+    // Show the winner screen
     private void showWinnerScreen(List<Player> players) {
         try {
             if (winnerStage == null) {
@@ -1752,6 +1808,7 @@ public class GameController {
         declareWinner();
     }
 
+    // Get the players sorted by score in descending order
     private List<Player> getPlayersSortedByScore() {
         // Assuming you have a method to get all players
         List<Player> players = getAllPlayers();
