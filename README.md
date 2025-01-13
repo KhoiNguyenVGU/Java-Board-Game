@@ -13,7 +13,9 @@ We’re thrilled to have you here and hope this guide helps you get everything u
 - Step 3: Open a terminal (or Git Bash) and run the following command to clone the repository
 `git clone https://github.com/KhoiNguyenVGU/Java-Board-Game.git`
 
-- Step 4: Click the `.exe` file to run the game.
+- Step 4: Run the `HickHackSetup.exe` installer and follow the instructions inside.
+
+- Step 5: After installation, click on the shortcut app on your desktop to run the game and enjoy.
 
 # Run Requirements for IDE.
 
