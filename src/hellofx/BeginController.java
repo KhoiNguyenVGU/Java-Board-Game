@@ -16,7 +16,9 @@
  import javafx.animation.FadeTransition;
  import javafx.event.ActionEvent;
  import javafx.fxml.FXML;
+ import javafx.fxml.FXMLLoader;
  import javafx.fxml.Initializable;
+ import javafx.scene.Parent;
  import javafx.scene.Scene;
  import javafx.scene.control.Button;
  import javafx.scene.image.Image;
@@ -86,7 +88,18 @@
              System.err.println("mainApp is null, cannot proceed.");
          }
      }
- 
+
+     @FXML
+     public void handleSinglePlayerButtonAction(ActionEvent event) {
+         int playerCount = 3;
+         game = new Game(playerCount);
+         if (mainApp != null) {
+                mainApp.showSinglePage(game);
+            } else {
+                System.err.println("mainApp is null, cannot proceed.");
+         }
+     }
+
      /**
       * Initializes the controller class. This method is automatically called after the FXML file has been loaded.
       * 
@@ -128,13 +141,13 @@
          }
  
          // Apply animations programmatically
-         applyAnimations();
+         // applyAnimations();
      }
  
      /**
       * Applies animations to the UI components.
       */
-     private void applyAnimations() {
+     /* private void applyAnimations() {
          // Slide-in animation for labels
          Timeline slideInTimeline = new Timeline(
              new KeyFrame(Duration.ZERO, 
@@ -195,7 +208,7 @@
  
          scaleTransition.play();
          fadeTransition.play();
-     }
+     } */
  
      /**
       * Event handler for the Show Rules button action.

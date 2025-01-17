@@ -69,6 +69,31 @@ public class Main extends Application {
         }
     }
 
+    public void showSinglePage(Game game) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/single_player_game.fxml"));
+            Parent root = loader.load();
+            SingleGameController controller = loader.getController();
+            controller.setMainApp(this);
+            controller.setGame(game);
+
+            InputStream logoStream = getClass().getResourceAsStream("/hellofx/resources/logo/logo.jpg");
+            if (logoStream == null) {
+                System.out.println("Logo not found!");
+            } else {
+                primaryStage.getIcons().add(new Image(logoStream));
+            }
+
+            Scene scene = new Scene(root);
+            primaryStage.setTitle("Hick Hack");
+            primaryStage.setScene(scene);
+            primaryStage.setFullScreen(true); // Set the stage to full screen
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void showRulesPage() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/hellofx/resources/rules.fxml"));

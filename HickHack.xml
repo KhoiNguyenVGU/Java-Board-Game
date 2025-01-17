@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\Complete Game\HickHack.jar</jar>
-  <outfile>C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\Complete Game\HickHack.exe</outfile>
+  <jar>C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\test2\HickHack.jar</jar>
+  <outfile>C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\test2\HickHack.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
