@@ -2,13 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "HickHack"
-#define MyAppVersion "1.0"
+#define MyAppVersion "2.0"
 #define MyAppExeName "HickHack.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{6A0A3C57-A1EA-4A9A-8887-05F89678D761}
+AppId={{E2665A2B-F647-4B02-A044-D32CC1401848}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -29,8 +29,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\Final\Java-Board-Game\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\HickHackResources\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\VGU\Academic Year 2\Java OOP\test2\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Khoi Nguyen\OneDrive - student.vgu.edu.vn\Desktop\test\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
