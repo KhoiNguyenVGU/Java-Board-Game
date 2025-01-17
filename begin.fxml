@@ -1,0 +1,42 @@
+<!--
+    begin.fxml
+
+    This FXML file defines the layout for the initial screen of the JavaFX application.
+    It includes a background image, a title label, a welcome label, and three buttons:
+    "Start Game", "Show Rules", and "Exit". The buttons are linked to their respective
+    event handlers in the BeginController class.
+
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.BeginController" fx:id="rootPane">
+   <children>
+      <!-- Background image for the initial screen -->
+      <ImageView fx:id="backgroundImageView" fitWidth="800.0" fitHeight="600.0" />
+      
+      <!-- VBox to hold the title, welcome labels, and buttons -->
+      <VBox fx:id="vbox" alignment="CENTER" spacing="20" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+         <!-- Title label -->
+         <Label fx:id="titleLabel" text="Welcome to Hick Hack" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: blue;" />
+         
+         <!-- Welcome label -->
+         <Label fx:id="welcomeLabel" text="Get ready to play!" style="-fx-font-size: 24px;" />
+         
+         <!-- Start Game button -->
+         <Button fx:id="btnOkDetect" text="Start Game" onAction="#onOkButtonPressed" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+
+         <Button fx:id="singlePlayerButton" text="Single Player" onAction="#handleSinglePlayerButtonAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+         
+         <!-- Show Rules button -->
+         <Button fx:id="showRulesButton" text="Show Rules" onAction="#handleShowRulesAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+         
+         <!-- Exit button -->
+         <Button fx:id="exitButton" text="Exit" onAction="#handleExitAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+      </VBox>
+   </children>
+</AnchorPane>
