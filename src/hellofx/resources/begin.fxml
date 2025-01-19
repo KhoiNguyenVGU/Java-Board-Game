@@ -30,6 +30,7 @@
          <!-- Start Game button -->
          <Button fx:id="btnOkDetect" text="Start Game" onAction="#onOkButtonPressed" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
 
+         <!-- Start Single Game button -->
          <Button fx:id="singlePlayerButton" text="Single Player" onAction="#handleSinglePlayerButtonAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
          
          <!-- Show Rules button -->
