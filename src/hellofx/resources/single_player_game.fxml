@@ -15,28 +15,30 @@
 <?import javafx.scene.text.Font?>
 
 <StackPane alignment="CENTER" maxHeight="1080" maxWidth="1920" minHeight="1080" minWidth="1920" prefHeight="1080" prefWidth="1920" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hellofx.SingleGameController">
+    <!-- Container for all game elements -->
     <VBox alignment="CENTER" prefHeight="880.0" prefWidth="1325.0" spacing="10">
+         <!-- Player areas and Game board -->
         <GridPane fx:id="mainGrid" alignment="CENTER" hgap="10" maxHeight="580.0" minHeight="580.0" prefHeight="580.0" prefWidth="1920.0" vgap="10">
-            <!-- Top player pile -->
+            <!-- Top player pile (Player 1) -->
             <VBox fx:id="player1CardPile" alignment="TOP_CENTER" maxHeight="135.0" maxWidth="769.0" minHeight="135.0" minWidth="769.0" prefHeight="135.0" prefWidth="769.0" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 1;" GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Label text="Player 1" />
                 <FlowPane fx:id="player1CardFlowPane" alignment="CENTER" hgap="5" orientation="HORIZONTAL" />
                 <Button fx:id="addCardsButton1" onAction="#handleAddCardsToPlayer1Action" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" text="Add Card" />
             </VBox>
 
-                  <!-- Left player pile -->
+                  <!-- Left player pile (Player 2) -->
             <VBox fx:id="player2CardPile" alignment="TOP_CENTER" maxHeight="430.0" maxWidth="150.0" minHeight="430.0" minWidth="150.0" prefHeight="430.0" prefWidth="150.0" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2; -fx-pref-height: 70px;" GridPane.rowIndex="1">
                 <Label text="Player 2" />
                 <!-- Player 2 cards will be added here -->
             </VBox>
 
-                  <!-- Right player pile -->
+                  <!-- Right player pile (Player 3) -->
             <VBox fx:id="player3CardPile" alignment="TOP_CENTER" maxHeight="430.0" maxWidth="150.0" minHeight="430.0" minWidth="150.0" prefHeight="430.0" prefWidth="150.0" style="-fx-padding: 10; -fx-border-color: black; -fx-border-width: 2; -fx-pref-height: 70px;" GridPane.columnIndex="2" GridPane.rowIndex="1">
                 <Label text="Player 3" />
                 <!-- Player 3 cards will be added here -->
             </VBox>
 
-                  <!-- Center area for the game board -->
+                  <!-- Center area for the game board (3x2 layout)-->
             <GridPane fx:id="cardGrid" alignment="CENTER" hgap="3.0" vgap="3.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                 <!-- Existing areas and elements -->
                 <StackPane fx:id="area1" style="-fx-border-color: black; -fx-border-width: 2; -fx-pref-width: 250; -fx-pref-height: 250;" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -167,6 +169,7 @@
 
                               <!-- Buttons -->
             <VBox alignment="CENTER" spacing="10">
+                <!-- Resolve Farm, Reshuffle, and Place Cubes buttons -->
                 <Button fx:id="resolveFarmButton" onAction="#handleResolveFarmAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;" text="Resolve Farm" />
                 <Button fx:id="reshuffleButton" onAction="#handleReshuffleButtonAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;" text="Reshuffle" />
                 <Button fx:id="placeCubesButton" onAction="#handlePlaceCubesButtonAction" style="-fx-background-color: #ff6600; -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;" text="Place Cubes" />
