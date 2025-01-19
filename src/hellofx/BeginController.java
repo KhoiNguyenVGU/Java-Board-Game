@@ -36,29 +36,14 @@
  public class BeginController implements Initializable {
  
      // FXML annotation to bind UI components from the FXML file
-     @FXML
-     private Button btnOkDetect;
- 
-     @FXML
-     private Button showRulesButton;
- 
-     @FXML
-     private Button exitButton;
- 
-     @FXML
-     private ImageView backgroundImageView;
- 
-     @FXML
-     private AnchorPane rootPane;
- 
-     @FXML
-     private VBox vbox;
- 
-     @FXML
-     private Label titleLabel;
- 
-     @FXML
-     private Label welcomeLabel;
+     @FXML private Button btnOkDetect;            // Main game start button
+     @FXML private Button showRulesButton;        // Button to display game rules
+     @FXML private Button exitButton;             // Button to exit application
+     @FXML private ImageView backgroundImageView; // Background image container
+     @FXML private AnchorPane rootPane;           // Root container for all elements
+     @FXML private VBox vbox;                     // Vertical container for UI elements
+     @FXML private Label titleLabel;              // Game title display
+     @FXML private Label welcomeLabel;            // Welcome message display
  
      private Main mainApp;
      private Game game;
@@ -89,6 +74,12 @@
          }
      }
 
+     /**
+     * Handles single player game initialization
+     * Creates a new game instance and transitions to the single player screen
+     *
+     * @param event the action event
+     */
      @FXML
      public void handleSinglePlayerButtonAction(ActionEvent event) {
          int playerCount = 3;
@@ -146,6 +137,10 @@
  
      /**
       * Applies animations to the UI components.
+      * Includes:
+      * - Slide-in animations for labels
+      * - Bounce animations for buttons
+      * - Pulsating animations for title
       */
      /* private void applyAnimations() {
          // Slide-in animation for labels
