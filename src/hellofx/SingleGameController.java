@@ -1,5 +1,12 @@
+/**
+ * SingleGameController.java
+ * Controller class for managing single-player game mode in Hick Hack game.
+ * Handles game logic, UI interactions, and player management.
+ */
+
 package hellofx;
 
+// JavaFX UI component and animation imports
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Bounds;
@@ -33,6 +40,7 @@ import javafx.animation.TranslateTransition;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
+// Java utility imports
 import java.util.Iterator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -48,80 +56,65 @@ import java.util.stream.Collectors;
 
 public class SingleGameController {
 
-    @FXML
-    private StackPane area1, area2, area3, area4, area5, area6;
-
-    @FXML
-    private GridPane cardGrid;
-
-    @FXML
-    private StackPane cardPile;
-
-    @FXML
-    private Button backToStartButton;
-
-    @FXML
-    private VBox cubeBox;
-
-    @FXML
-    private FlowPane cubeFlowPane;
-
-    @FXML
-    private ImageView diceImage;
-
-    @FXML
-    private Button placeCubesButton;
-
-    private Map<StackPane, Integer> areaTotalValueMap = new HashMap<>();
-
-    @FXML
-    private Button resolveFarmButton;
-
-    @FXML
-    private Button addCardsButton;
-
-    @FXML
-    private VBox player1CardPile, player2CardPile, player3CardPile;
-
-    @FXML
-    private FlowPane player1CardFlowPane;
-
-    @FXML
-    private Button addCardsButton1;
-
-    @FXML
-    private Label player1ScoreLabel, player2ScoreLabel, player3ScoreLabel;
-
-    @FXML
-    private Label cardPileCountLabel;
-
+    @FXML private StackPane area1, area2, area3, area4, area5, area6;     // Game board areas
+    @FXML private GridPane cardGrid;                                      // Card layout grid
+    @FXML private StackPane cardPile;                                     // Deck of cards
+    @FXML private Button backToStartButton;                               // Return to menu button
+    @FXML private VBox cubeBox;                                           // Cube storage
+    @FXML private FlowPane cubeFlowPane;                                  // Display area for available cubes
+    @FXML private ImageView diceImage;                                    // Dice display image
+    @FXML private Button placeCubesButton;                                // Trigger cube placement
+    @FXML private Button resolveFarmButton;                               // Trigger farm resolving
+    @FXML private Button addCardsButton;                                  // Add cards to hand
+    @FXML private VBox player1CardPile, player2CardPile, player3CardPile; // Player hand
+    @FXML private FlowPane player1CardFlowPane;                           // Player 1's card display area
+    @FXML private Button addCardsButton1;                                 // Player 1's draw button
+    @FXML private Label cardPileCountLabel;                               // Remaining cards counter
     //private Label discardPileCountLabel;
+    
+    // Tracks total value in each area
+    private Map<StackPane, Integer> areaTotalValueMap = new HashMap<>();
+    // Score display labels
+    @FXML private Label player1ScoreLabel, player2ScoreLabel, player3ScoreLabel;
 
     private Game game;
 
-    private Map<Color, StackPane> colorToAreaMap;
-    private Map<Color, Integer> colorToValueMap;
+    private Map<Color, StackPane> colorToAreaMap; // Maps colors to board areas
+    private Map<Color, Integer> colorToValueMap;  // Maps colors to point values
 
+    // Player state tracking
     private boolean player1CardSelected = false;
     private boolean player2CardSelected = false;
     private boolean player3CardSelected = false;
 
+    // Maps players to their selected cards
     private Map<Integer, Card> playerCardMap = new HashMap<>();
 
-    private int currentPlayerTurn = 1;
-    private Player player1 = new Player("Player 1");
+    // Player management
+    private int currentPlayerTurn = 1;               // Current player's turn
+    private Player player1 = new Player("Player 1"); // Player instances
     private Player player2 = new Player("Player 2");
     private Player player3 = new Player("Player 3");
 
+    // Score tracking
     private int scorePlayer1 = 0;
     private int scorePlayer2 = 0;
     private int scorePlayer3 = 0;
 
+    /**
+     * Sets the main application reference
+     * @param mainApp The main application instance
+     */
     private Main mainApp;
     public void setMainApp(Main mainApp) {
         this.mainApp = mainApp;
     }
 
+    /**
+     * Initializes the game
+     * Sets up initial card distribution
+     * @param game The game instance to initialize
+     */
     public void setGame(Game game) {
         this.game = game;
         initializeGame();
@@ -132,32 +125,43 @@ public class SingleGameController {
 
     @FXML
     public void initialize() {
-        createCubes();
-        initializeColorToAreaMap();
-        setAreaBackgroundImages();
-        updateAddCardsButtons();
-        initializeColorToValueMap();
-        initializeAreaTotalValueMap();
-        updatePlayerScores();
+        createCubes();                 // Create game cubes
+        initializeColorToAreaMap();    // Set up area mapping
+        setAreaBackgroundImages();     // Load area images
+        updateAddCardsButtons();       // Update buttons
+        initializeColorToValueMap();   // Set up scoring values
+        initializeAreaTotalValueMap(); // Initialize area tracking
+        updatePlayerScores();          // Set initial scores
         //chooseCardsInOrder();
+        
         player2CardPile.setVisible(false);
         player3CardPile.setVisible(false);
+
+        // Configure resolve button
         resolveFarmButton.setOnAction(_ -> {
             handleResolveFarmAction();
             if (cubeFlowPane.getChildren().isEmpty()) {
                 endGame();
             }
         });
-        updateCardPileCount();
-        chooseCardFromPlayer(1);
+        
+        updateCardPileCount();          // Update deck counter
+        chooseCardFromPlayer(1);        // Start with player 1
     }
 
+    // Initializes the game state
     private void initializeGame() {
         createAndShuffleCards();
     }
 
+    /**
+     * Sets up background images for each area
+     * Maps colors to their corresponding image files
+     */
     private void setAreaBackgroundImages() {
         String imageFolderPath = "src/hellofx/resources/areas/";
+
+        // Define color to image file mapping
         Map<Color, String> colorToImageFileMap = new HashMap<>();
         colorToImageFileMap.put(Color.YELLOW, "yellow.png");
         colorToImageFileMap.put(Color.GREEN, "green.png");
@@ -165,6 +169,8 @@ public class SingleGameController {
         colorToImageFileMap.put(Color.BLUE, "blue.png");
         colorToImageFileMap.put(Color.PURPLE, "purple.png");
         colorToImageFileMap.put(Color.BLACK, "black.png");
+
+        // Apply background images to each area
         for (Map.Entry<Color, StackPane> entry : colorToAreaMap.entrySet()) {
             Color color = entry.getKey();
             StackPane area = entry.getValue();
@@ -189,6 +195,10 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Initializes the mapping between colors and areas
+     * Associates each color with its corresponding StackPane area
+     */
     private void initializeColorToAreaMap() {
         colorToAreaMap = new HashMap<>();
         colorToAreaMap.put(Color.YELLOW, area1);
@@ -199,6 +209,10 @@ public class SingleGameController {
         colorToAreaMap.put(Color.BLACK, area6);
     }
 
+    /**
+     * Initializes the scoring values for different colors
+     * Sets up point values for scoring calculations
+     */
     private void initializeColorToValueMap() {
         colorToValueMap = new HashMap<>();
         colorToValueMap.put(Color.GREEN, 1);
@@ -206,6 +220,7 @@ public class SingleGameController {
         colorToValueMap.put(Color.YELLOW, 3);
     }
 
+    // Initializes the total value tracking for each area
     private void initializeAreaTotalValueMap() {
         areaTotalValueMap = new HashMap<>();
         areaTotalValueMap.put(area1, 0);
@@ -216,6 +231,11 @@ public class SingleGameController {
         areaTotalValueMap.put(area6, 0);
     }
 
+    /**
+     * Creates an ImageView for a card with proper styling and event handling
+     * @param card The card to create an image view for
+     * @return ImageView representing the card
+     */
     private ImageView createCardImageView(Card card) {
         String cardColor = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
         String imagePath = "src/hellofx/resources/cards/" + card.getType() + "_" + card.getValue() + "_" + cardColor + ".png";
@@ -239,6 +259,7 @@ public class SingleGameController {
         }
     }
 
+    // Initializes the card pile with shuffled card images
     private void createAndShuffleCards() {
         List<ImageView> cards = new ArrayList<>();
         for (Card card : game.getDeck()) {
@@ -247,6 +268,8 @@ public class SingleGameController {
             cardImageView.setFitHeight(150);
             cards.add(cardImageView);
         }
+        
+        // Shuffle and add to card pile
         Collections.shuffle(cards);
         cardPile.getChildren().clear();
         for (ImageView cardImageView : cards) {
@@ -254,6 +277,10 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Creates the game cubes and adds them to the cube flow pane
+     * Sets up cube appearance and interaction handlers
+     */
     private void createCubes() {
         List<StackPane> cubes = new ArrayList<>();
         for (int i = 0; i < 26; i++) {
@@ -261,10 +288,16 @@ public class SingleGameController {
             cubes.add(createCubeWithBorder(Color.GREEN));
             cubes.add(createCubeWithBorder(Color.BLUE));
         }
+        // Randomize cube order and add to display
         Collections.shuffle(cubes);
         cubeFlowPane.getChildren().addAll(cubes);
     }
 
+    /**
+     * Creates a single 3D cube with a white border
+     * @param color The color of the inner cube
+     * @return StackPane containing the bordered cube
+     */
     private StackPane createCubeWithBorder(Color color) {
         StackPane stack = new StackPane();
         Box borderBox = new Box(22, 22, 22); // Slightly larger for the border
@@ -274,14 +307,20 @@ public class SingleGameController {
         stack.getChildren().addAll(borderBox, cube);
         return stack;
     }
-
+    /**
+     * Handles automated play for bots (Player 2 and Player 3)
+     * @param playerNumber The player number (2 or 3)
+     */
     private void playAutomaticallyForPlayer(int playerNumber) {
+        // Determine which player's pile to use
         VBox playerPile = (playerNumber == 2) ? player2CardPile : player3CardPile;
+        // Get all cards in player's pile
         List<ImageView> cardImageViews = playerPile.getChildren().stream()
                 .filter(node -> node instanceof ImageView)
                 .map(node -> (ImageView) node)
                 .collect(Collectors.toList());
-
+        
+        // Check if player needs more cards
         if (cardImageViews.size() == 4) {
             PauseTransition addCardPause = new PauseTransition(Duration.seconds(2)); // 2-second delay before adding a card
             addCardPause.setOnFinished(event -> {
@@ -294,6 +333,11 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Handles the delayed playing of cards for bots
+     * @param playerNumber The player number
+     * @param playerPile The player's card pile
+     */
     private void playCardAfterDelay(int playerNumber, VBox playerPile) {
         List<ImageView> cardImageViews = playerPile.getChildren().stream()
                 .filter(node -> node instanceof ImageView)
@@ -301,6 +345,7 @@ public class SingleGameController {
                 .collect(Collectors.toList());
 
         if (!cardImageViews.isEmpty()) {
+            // Randomly select a card to play
             Random random = new Random();
             int randomIndex = random.nextInt(cardImageViews.size());
             ImageView cardImageView = cardImageViews.get(randomIndex);
@@ -310,6 +355,7 @@ public class SingleGameController {
             playCardPause.setOnFinished(event -> {
                 handleCardSelection(card, playerPile, cardImageView, playerNumber);
 
+                // Update game state based on player
                 if (playerNumber == 2) {
                     player2CardSelected = true;
                     currentPlayerTurn = 3;
@@ -320,6 +366,7 @@ public class SingleGameController {
                     transitionToNextPlayer(player1CardPile, player2CardPile, player3CardPile);
                 }
 
+                // Enable resolve button if all players have selected cards
                 if (player1CardSelected && player2CardSelected && player3CardSelected) {
                     resolveFarmButton.setDisable(false);
                 }
@@ -328,6 +375,11 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Creates a mapping of cards to their indices in a player's pile
+     * @param playerPile The player's card pile
+     * @return Map of Cards to their indices
+     */
     private Map<Card, Integer> getCardIndicesInPlayerPile(VBox playerPile) {
         Map<Card, Integer> cardIndexMap = new HashMap<>();
         for (int i = 0; i < playerPile.getChildren().size(); i++) {
@@ -340,6 +392,12 @@ public class SingleGameController {
         return cardIndexMap;
     }
 
+    /**
+     * Adds a card to a player's pile
+     * @param card The card to add
+     * @param playerPile The target player's pile
+     * @param playerNumber The player number
+     */
     private void addCardToPlayerPile(Card card, VBox playerPile, int playerNumber) {
         ImageView cardImageView = createCardImageView(card);
         cardImageView.setFitWidth(50);
@@ -348,7 +406,9 @@ public class SingleGameController {
         cardImageView.setSmooth(true);
         cardImageView.setUserData(card);
 
+        // Handle differently for human player (player 1)
         if (playerNumber == 1) {
+            // Add click handler for human player
             cardImageView.setOnMouseClicked(_ -> {
                 if (currentPlayerTurn == 1 && !player1CardSelected) {
                     handleCardSelection(card, player1CardFlowPane, cardImageView, playerNumber);
@@ -362,32 +422,51 @@ public class SingleGameController {
             });
             player1CardFlowPane.getChildren().add(cardImageView);
         } else {
+            // Add card to bot's pile
             playerPile.getChildren().add(cardImageView);
         }
     }
 
+    // Shows the current count of cards in the card pile
     private void updateCardPileCount() {
         int cardCount = cardPile.getChildren().size();
         cardPileCountLabel.setText("Cards: " + cardCount);
     }
 
+    /**
+     * Manages the visibility of player piles during turn transitions
+     * @param nextPlayerPile The pile of the next player to be visible
+     * @param otherPlayerPile1 First pile to hide
+     * @param otherPlayerPile2 Second pile to hide
+     */
     private void transitionToNextPlayer(VBox nextPlayerPile, VBox otherPlayerPile1, VBox otherPlayerPile2) {
         nextPlayerPile.setVisible(true);
         otherPlayerPile1.setVisible(false);
         otherPlayerPile2.setVisible(false);
     }
 
+    /**
+     * Handles the selection and playing of cards by players
+     * @param card The selected card
+     * @param playerPile The pile from which the card was selected
+     * @param cardImageView The visual representation of the card
+     * @param playerNumber The player who selected the card
+     */
     private void handleCardSelection(Card card, Pane playerPile, ImageView cardImageView, int playerNumber) {
         System.out.println("Player " + playerNumber + " selected card: " + card);
         playerPile.getChildren().remove(cardImageView);
         playerCardMap.put(playerNumber, card);
         String cardColorStr = card.getColor().equalsIgnoreCase("orange") ? "black" : card.getColor();
+
+        // Find target area for card placement
         StackPane targetArea = getTargetAreaByColor((GridPane) playerPile.getScene().lookup("#mainGrid"), cardColorStr);
         if (targetArea != null) transitionCard(cardImageView, playerPile, cardColorStr, playerNumber);
         else System.out.println("Target area not found for color: " + cardColorStr);
         addCardsButton1.setDisable(false);
         //addCardsButton2.setDisable(false);
         //addCardsButton3.setDisable(false);
+
+        // Handle turn transitions and bots actions
         if (playerNumber == 1) {
             currentPlayerTurn = 2;
             transitionToNextPlayer(player2CardPile, player1CardPile, player3CardPile);
@@ -403,10 +482,19 @@ public class SingleGameController {
         if (player1CardSelected && player2CardSelected && player3CardSelected) resolveFarmButton.setDisable(false);
     }
 
+    /**
+     * Animates card movement from player's hand to target area
+     * @param cardImageView The card to animate
+     * @param startPane The starting position
+     * @param cardColor The color of the card (determines target area)
+     * @param playerNumber The player who played the card
+     */
     private void transitionCard(ImageView cardImageView, Pane startPane, String cardColor, int playerNumber) {
         ImageView cardClone = new ImageView(cardImageView.getImage());
         cardClone.setFitWidth(50);
         cardClone.setFitHeight(75);
+
+        // Get reference to main grid and target area
         GridPane mainGrid = (GridPane) startPane.getScene().lookup("#mainGrid");
         StackPane targetArea = getTargetAreaByColor(mainGrid, cardColor);
         Bounds targetBounds = targetArea.localToScene(targetArea.getBoundsInLocal());
@@ -423,6 +511,8 @@ public class SingleGameController {
         transition.setToX(centerX - cardClone.getLayoutX());
         transition.setToY(centerY - cardClone.getLayoutY());
         transition.setInterpolator(javafx.animation.Interpolator.EASE_BOTH);
+
+        // Handle animation completion
         transition.setOnFinished(_ -> {
             mainGrid.getChildren().remove(cardClone);
             VBox cardVBox = null;
@@ -445,6 +535,13 @@ public class SingleGameController {
         transition.play();
     }
 
+    /**
+     * Maps card colors to their corresponding target areas in the game grid
+     * @param mainGrid The main game grid containing all areas
+     * @param cardColor The color of the card to map
+     * @return StackPane representing the target area for the given color
+     * @throws IllegalArgumentException if the card color is unknown
+     */
     private StackPane getTargetAreaByColor(GridPane mainGrid, String cardColor) {
         switch (cardColor.toLowerCase()) {
             case "yellow":
@@ -466,6 +563,12 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Deals cards from the main deck to a player's pile
+     * @param numberOfCards Number of cards to deal
+     * @param playerPile The target player's pile
+     * @param playerNumber The player receiving the cards
+     */
     private void addCardsToPlayerPile(int numberOfCards, VBox playerPile, int playerNumber) {
         for (int i = 0; i < numberOfCards; i++) {
             if (!cardPile.getChildren().isEmpty()) {
@@ -480,7 +583,8 @@ public class SingleGameController {
         //addCardsButton2.setDisable(true);
         //addCardsButton3.setDisable(true);
     }
-
+    
+    // Initiates a new turn by dealing cards to all players
     public void onNextTurn() {
         addCardsToPlayerPile(5, player1CardPile, 1);
         addCardsToPlayerPile(5, player2CardPile, 2);
@@ -491,12 +595,18 @@ public class SingleGameController {
         currentPlayerTurn = 1;
     }
 
+    /**
+     * Event handler for the place cubes button
+     * Triggers cube placement and disables the button
+     * @param event The action event
+     */
     @FXML
     private void handlePlaceCubesButtonAction(ActionEvent event) {
         placeCubesInAreas();
         placeCubesButton.setDisable(true);
     }
 
+    // Event handler for adding cards to Player 1's pile
     @FXML
     private void handleAddCardsToPlayer1Action() {
         addCardsToPlayerPile(1, player1CardPile, 1);
@@ -509,22 +619,16 @@ public class SingleGameController {
 
     @FXML
     private void handleAddCardsToPlayer2Action() {
-//        addCardsToPlayerPile(1, player2CardPile, 2);
-//        player2CardSelected = false;
-//        updateAddCardsButtons();
-//        addCardsButton3.setDisable(true);
-//        addCardsButton1.setDisable(false);
     }
 
     @FXML
     private void handleAddCardsToPlayer3Action() {
-//        addCardsToPlayerPile(1, player3CardPile, 3);
-//        player3CardSelected = false;
-//        updateAddCardsButtons();
-//        addCardsButton1.setDisable(true);
-//        addCardsButton2.setDisable(false);
     }
 
+    /**
+     * Handles navigation back to the start screen
+     * @param event The button click event
+     */
     @FXML
     private void handleBackToStartAction(ActionEvent event) {
         try {
@@ -541,6 +645,10 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Places cubes in game areas and manages cube distribution
+     * Handles cube value calculation and tracking
+     */
     private void placeCubesInAreas() {
         StackPane[] areas = {area1, area2, area3, area4, area5, area6};
         for (StackPane area : areas) {
@@ -589,12 +697,20 @@ public class SingleGameController {
 
     }
 
+    /**
+     * Updates the state of add cards buttons based on pile sizes
+     * Enables/disables buttons according to game rules
+     */
     private void updateAddCardsButtons() {
         addCardsButton1.setDisable(player1CardPile.getChildren().size() != 4);
         //addCardsButton2.setDisable(player2CardPile.getChildren().size() != 4);
         //addCardsButton3.setDisable(player3CardPile.getChildren().size() != 4);
     }
 
+    /**
+     * Updates and displays scores for all players
+     * Calculates and accumulates points from current round
+     */
     private void updatePlayerScores() {
         Map<Integer, Integer> playerScores = calculatePlayerScores();
         int player1Score = playerScores.getOrDefault(1, 0);
@@ -611,12 +727,20 @@ public class SingleGameController {
         player3ScoreLabel.setText("Player 3 Score: " + scorePlayer3);
     }
 
+    /**
+     * Manages the order of card selection for all players
+     * Coordinates between manual and automatic card selection
+     */
     private void chooseCardsInOrder() {
         chooseCardFromPlayer(1);
         chooseCardFromPlayer(2);
         chooseCardFromPlayer(3);
     }
 
+    /**
+     * Handles card selection process for a specific player
+     * @param playerNumber The player whose turn it is
+     */
     private void chooseCardFromPlayer(int playerNumber) {
         if (playerNumber == 1) {
             // Player 1 selects a card manually
@@ -632,6 +756,23 @@ public class SingleGameController {
     @FXML
     private StackPane discardPile;
 
+    /**
+     * Calculates scores for all players based on card combinations and area values
+     * 
+     * This function handles various card combination scenarios:
+     * - Single cards (Bird, Fox, Fleeing Bird)
+     * - Two card combinations (Bird vs Bird, Fox vs Fox, Bird vs Fleeing Bird, etc.)
+     * - Three card combinations (Triple Birds, Triple Fox, etc.)
+     * 
+     * Score calculation rules:
+     * - Bird cards collect cube values from their areas
+     * - Fox cards steal points from Bird cards
+     * - Fleeing Birds can escape with 1 point if green cube present
+     * - Ties between Birds are resolved with dice rolls
+     * 
+     * @return Map<Integer, Integer> where key is player number and value is their score
+     *         for the current round
+     */
     private Map<Integer, Integer> calculatePlayerScores() {
         Map<Integer, Integer> playerScores = new HashMap<>();
         Random random = new Random();
@@ -1094,6 +1235,10 @@ public class SingleGameController {
         return playerScores;
     }
 
+    /**
+     * Removes a green cube from the specified game area
+     * @param area The StackPane representing the game area to remove the green cube from
+     */
     private void removeGreenCube(StackPane area) {
         VBox cubeVBox = null;
         for (javafx.scene.Node node : area.getChildren()) {
@@ -1121,11 +1266,20 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Determines which player owns a specific card
+     * @param card The Card object to find the owner for
+     * @return The player number (1-3) who owns the card, or -1 if not found
+     */
     private int getPlayerNumberByCard(Card card) {
         for (Map.Entry<Integer, Card> entry : playerCardMap.entrySet()) if (entry.getValue().equals(card)) return entry.getKey();
         return -1; // Return -1 if the card is not found
     }
 
+    /**
+     * Clears all cubes from a game area and resets its cube container
+     * @param area The StackPane representing the game area to clear
+     */
     private void clearCubesInVBox(StackPane area) {
         VBox cubeVBox = null;
         for (javafx.scene.Node node : area.getChildren()) {
@@ -1146,6 +1300,10 @@ public class SingleGameController {
         cubeVBox.getChildren().clear();
     }
 
+    /**
+     * Prints debug information about cubes in a specific game area
+     * @param area The StackPane representing the game area to inspect
+     */
     private void printCubesInArea(StackPane area) {
         VBox cubeVBox = null;
         for (javafx.scene.Node node : area.getChildren()) {
@@ -1170,6 +1328,10 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Adds a card to the discard pile and updates the UI
+     * @param card The Card object to be added to the discard pile
+     */
     private void addCardToDiscardPile(Card card) {
         ImageView cardImageView = createCardImageView(card);
         cardImageView.setFitWidth(100);
@@ -1179,6 +1341,7 @@ public class SingleGameController {
         //updateDiscardPileCount();
     }
 
+    // Handles the resolution of a farm action round
     @FXML
     private void handleResolveFarmAction() {
         updatePlayerScores();
@@ -1198,6 +1361,11 @@ public class SingleGameController {
         }
     }
 
+    /**
+     * Locates the ImageView associated with a specific card in the game
+     * @param card The Card object to find
+     * @return The ImageView of the card if found, null otherwise
+     */
     private ImageView findCardImageView(Card card) {
         for (VBox playerPile : new VBox[]{player1CardPile, player2CardPile, player3CardPile}) {
             for (javafx.scene.Node node : playerPile.getChildren()) {
@@ -1224,6 +1392,11 @@ public class SingleGameController {
         return null;
     }
 
+    /**
+     * Converts a Color object to its string representation
+     * @param color The Color object to convert
+     * @return String representation of the color ("yellow", "green", "blue", or "unknown")
+     */
     private String getColorName(Color color) {
         if (Color.YELLOW.equals(color)) return "yellow";
         else if (Color.GREEN.equals(color)) return "green";
@@ -1233,7 +1406,8 @@ public class SingleGameController {
 
     @FXML
     private Button reshuffleButton;
-
+    
+    // Handles the reshuffling of cards from discard pile to draw pile
     @FXML
     private void handleReshuffleButtonAction() {
         if (cardPile.getChildren().isEmpty()) {
@@ -1250,11 +1424,16 @@ public class SingleGameController {
     private Stage winnerStage;
     private WinnerController winnerController;
 
+    // Initiates the winner declaration process
     private void declareWinner() {
         List<Player> players = getPlayersSortedByScore();
         showWinnerScreen(players);
     }
 
+    /**
+     * Displays the winner screen with final game results
+     * @param players List of players sorted by their final scores
+     */
     private void showWinnerScreen(List<Player> players) {
         try {
             if (winnerStage == null) {
@@ -1284,11 +1463,16 @@ public class SingleGameController {
         }
     }
 
+    // Handles game end procedures
     private void endGame() {
         updatePlayerScores();
         declareWinner();
     }
 
+    /**
+     * Returns a list of players sorted by their scores in descending order
+     * @return List of Player objects sorted by points (highest to lowest)
+     */
     private List<Player> getPlayersSortedByScore() {
         List<Player> players = getAllPlayers();
         return players.stream()
