@@ -1,0 +1,42 @@
+Comprehensive Roadmap for Running the Application
+1. Running the Source Code and Executable (.exe) File
+A. Running the Source Code:
+Install Java Development Kit (JDK):
+
+Make sure you have the correct version of Java installed. This project requires JDK 23.0.1 or later.
+
+Recommended IDE: Visual Studio Code.
+Open your IDE and configure the JDK version (JDK 23.0.1 or later) in the settings.
+Download and Extract the Project Files:
+
+Download the source code files (ZIP) and extract them to a folder on your computer.
+To run the Source Code in Visual Studio Code:
+1. Download latest JDK version(JDK 23.0.1) 
+2. Unzip and place in your preferred disk
+3. Add configuration to the launch.json with this format "vmArgs": "--module-path \"path_to_your_jdk_lib" --add-modules javafx.controls,javafx.fxml". The path is the library inside the folder JDK that is unzipped.
+4. On the bottom left, in Java Projects, Referenced Libraries should be added. Copy all the libraries of JDK and paste to the Referenced Library. Then the Source Code should be running normally.
+5.After setting up your IDE and adding necessary libraries, compile and run the Main.java file (or the main entry class) by using the IDE's built-in features (e.g., click on the green play button in IntelliJ IDEA).
+
+B. Running the Executable (.exe) File:
+1. In the unzipped folder of the project, there is an Executable file called HickHackSetup.exe.
+2. Tick the box "Create a desktop shortcut" and click Next.
+3. Click Install to install the game .exe file.
+4. Click Finish to complete the installation. Then a file of HickHack.exe appear in the desktop. Double-click to the icon of the game to play normally.
+
+
+2. External Libraries, Dependencies, Software, and Services
+A. External Libraries:
+JavaFX: Used for creating the graphical user interface.
+Library Version: JavaFX 23.0.1 or higher.
+B. Required Software:
+Java Development Kit (JDK): JDK 23.0.1 or later.
+Integrated Development Environment (IDE): Visual Studio Code.
+JavaFX SDK: JavaFX 23.0.1 or the appropriate version for your JDK.
+
+
+3. Version Information
+A. Java and JDK Version:
+JDK version: 23.0.1 or higher (required for JavaFX support).
+JavaFX Version: 23.0.1 or the compatible version for your JDK.
+B. IDE Version:
+Version: v1.96.4 or later.x
